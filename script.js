@@ -1,27 +1,54 @@
 class objectFormulaire{
 
 //Constructeur
-    constructor(id, type){
-        this.id = id;
-        this.type = type;
+    constructor(id, name, type){
 
+        this.setUpperType = type;
+
+        this.element = document.createElement(this.getUpperType);
+
+        this.setId = id;
+        this.setName = name;
+
+        if(this.getUpperType != "select") {
+            this.setType = type;
+        }
+        
         this.activated = true;
 
         this.parameter = new Array();
         this.dependance = new Array();
-    }
 
+        return this.element;
+    }
+    
 
 //Setters
 
-    setId(id){
-        this.id = id;
+    set setId(id){
+        this.element.id = id;
     }
 
-    setType(type){
-        this.type = type;
+    set setName(name){
+        this.element.name = name;
     }
 
+    set setUpperType(type){
+        var choosen;
+        if ( type == "text"){
+            choosen = "text";
+        } else if ( type == "select" ){
+            choosen = "select";
+        } else {
+            choosen = "input";
+        }
+        this.upperType = choosen;
+    }
+    
+    set setType(type){
+        this.element.type = type;
+    }
+    
     switchActivated(){
         if(this.activated == true){
             this.activated = false;
@@ -30,50 +57,28 @@ class objectFormulaire{
         }
     }
 
-    setParameter(){
-
-    }
-
-    setDependance(){
-
-    }
-
-
-
 
 //Getters
-    getId(){
-        return this.id;
+    get getId(){
+        return this.element.id;
     }
 
-    getType(){
-        return this.type;
+    get getName(){
+        return this.element.name;
     }
 
-    isActivated(){
+    get getType(){
+        return this.element.type;
+    }
+
+    get getUpperType(){
+        return this.upperType;
+    }
+
+    get isActivated(){
         return this.activated;
     }
 
-    getParameter(){
-
-    }
-
-    getDependance(){
-
-    }
-
-}
-
-function test(){
-var tabObj = new Array();
-tabObj.push(new objectFormulaire(1,"Oui bonjour"));
-tabObj.push(new objectFormulaire(2,"Non au revoir"));
-
-console.log(tabObj[0].getId());
-console.log(tabObj[0].isActivated());
-console.log(tabObj[0].getType());
-tabObj[0].switchActivated();
-console.log(tabObj[0].isActivated());
 }
 
 var tabElements = new Array();
@@ -93,22 +98,7 @@ function drop(event, id)
     
     var typeIdTarget = event.dataTransfer.getData("text");
     
-    var newElement;
-    
-    switch(typeIdTarget){
-        case "text" :
-            newElement = createTextInput();
-            break ;
-        case "radio" :
-            newElement = createRadioButton();
-            break ;
-        case "checkbox" :
-            newElement = textInput(); //changer
-            break ;
-        case "textarea":
-            newElement = textInput(); //changer
-            break ;
-    }
+    var newElement = new objectFormulaire(nbElements, nbElements, typeIdTarget);
     
     var div = document.createElement("DIV"); //div enveloppant tout l'element
     
@@ -183,17 +173,3 @@ function removeElements()
 {
     document.getElementById("dropper").innerHTML = ""; //plus rien
 }
-
-function createTextInput(){ //faire une fonction comme ca par type d'element
-    var input = document.createElement("input");
-    input.type ="text";
-    input.id = nbElements;
-    nbElements++;
-    return input;
-}
-
-function createRadioButton()
-{
-   
-}
-
