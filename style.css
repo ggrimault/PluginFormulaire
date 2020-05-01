@@ -39,3 +39,9 @@ div#rectangleFormulaire {
 body{
     overflow: hidden;
 }
+
+.optionForm {
+    margin: 1em;
+    border: 1px solid black;
+    padding-top: 5%;
+}
