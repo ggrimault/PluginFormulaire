@@ -26,15 +26,7 @@ div#centre {
     top: 0;
 }
 
-div#rectangleFormulaire {
-    margin: 1em;
-    border: 1px solid black;
-    height: 92%;
-    background:rgba(255, 174, 0, 0.384);
-    padding-top: 2%;
-    padding-left: 3%;
-    overflow-y: scroll;
-}
+
 
 body{
     overflow: hidden;
@@ -44,4 +36,16 @@ body{
     margin: 1em;
     border: 1px solid black;
     padding-top: 5%;
+}
+
+form
+{
+	margin: 1em;
+    border: 1px solid black;
+    height: 92%;
+    background:rgba(255, 174, 0, 0.384);
+    padding-top: 2%;
+    padding-left: 3%;
+    overflow-y: scroll;
+
 }

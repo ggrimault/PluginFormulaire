@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
     <title>Plugin Formulaire V1</title>
 </head>
 <body>
@@ -25,16 +26,17 @@
         <div id="combobox" draggable="true" class="optionForm" ondragstart="dragEventHandler(event);">
             <center><p>Liste déroulante</p></center>
         </div>
-
+        
+        <button onclick="test()">Effectuer le test</button>
 
     </div>
     <div id="centre">
     <p><center><h3> Formulaire </h3></center>
-    <div id="rectangleFormulaire">
-        
-
-
-    </div>
+    
+        <form id="dropper" class="form" ondragover="allowDrop(event)" ondrop="drop(event, this.id);">
+    
+        </form>
+ 
     </div>
     <div id="colonne2">
     <p><center><h3> Editer </h3></center>
