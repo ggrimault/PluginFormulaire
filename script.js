@@ -10,20 +10,20 @@ class objectFormulaire{
 
             this.upperType = type;
             this.element = document.createElement(this.upperType);
-    
+
         //Parametre general
-            
+
             this.id = id;
             this.name = name;
             if(this.upperType != "select") {
                 this.type = type;
             }
             this._activated = true;
-        
+
         //Parametre labels
-            var texteLabel = document.createTextNode("ID global : "+this.id); 
+            var texteLabel = document.createTextNode("ID global : "+this.id);
             this.label.appendChild(texteLabel);
-    
+
 
         //On sait pas ^^^^'
             this._parameter = new Array();
@@ -34,7 +34,7 @@ class objectFormulaire{
             this.div.setAttribute("ondragover","allowDrop(event)");
             this.div.setAttribute("ondrop","drop(event, this.id)");
             this.div.setAttribute("class","champForm");
-            this.div.setAttribute("onclick","edit(div)");
+            this.div.setAttribute("onclick","edit("+this.id+")");
 
         //Creation des object et de la hiérarchie
             this.div.appendChild(this.label);
@@ -42,21 +42,23 @@ class objectFormulaire{
 
             return this.div;
         }
-        
-    
+
+
     //Setters
-    
+
         set id(id){
-            this._idGlobal = id;
-            this.element.id = "element_" + id;
-            this.div.id = "div_" + id;
-            this.label.id = "label_" + id;
+            this._idGlobal = nbId;
+            this.element.id = "element_" + nbId;
+            this.div.id = "div_" + nbId;
+            this.label.id = "label_" + nbId;
+
+            nbId++;
         }
 
         set name(name){
             this.element.name = name;
         }
-    
+
         set upperType(type){
             var choosen;
             if ( type == "text"){
@@ -68,11 +70,11 @@ class objectFormulaire{
             }
             this._upperType = choosen;
         }
-    
+
         set type(type){
             this.element.type = type;
         }
-        
+
         switchActivated(){
             if(this.isActivated == true){
                 this._activated = false;
@@ -80,31 +82,32 @@ class objectFormulaire{
                 this._activated = true;
             }
         }
-    
-    
+
+
     //Getters
         get id(){
             return this._idGlobal;
         }
-    
+
         get name(){
             return this.element._name;
         }
-    
+
         get type(){
             return this.element._type;
         }
-    
+
         get upperType(){
             return this._upperType;
         }
-    
+
         get isActivated(){
             return this._activated;
         }
-    
+
     }
 
+    var nbId = 0;
 /*
 
 
@@ -126,30 +129,30 @@ function drop(event, id)
 {
     event.preventDefault();
     //creer element de bon type selon l'event target dans un div avec 2 br
-    
+
     var typeIdTarget = event.dataTransfer.getData("text");
-    
+
     var newElement = new objectFormulaire(nbElements, nbElements, typeIdTarget);
-    
+
     //var div = document.createElement("DIV"); //div enveloppant tout l'element
-    
+
     //var label = document.createElement("p"); // creation du label de base
-    //var texteLabel = document.createTextNode(typeIdTarget); 
+    //var texteLabel = document.createTextNode(typeIdTarget);
     //label.appendChild(texteLabel);
-    
+
     /*
     div.setAttribute("ondragover","allowDrop(event)");
     div.setAttribute("ondrop","drop(event, this.id)");
     div.setAttribute("class","champForm");
     div.setAttribute("onclick","edit(div)");
-    
+
 
     div.appendChild(label);
     div.appendChild(newElement);
     */
-    
+
     //classer dans le tableau et donner le num d'index en id au div du nouvel element
-    
+
     if (isDropped == 0) { //Si on drag dans un div qui est lui meme sur le dropper, ca l'ajoutera 2 fois, isDropped sert à ca
         if(id == "dropper") //si c'est juste sur le dropper, on le met à la fin de la ligne
         {
@@ -160,23 +163,23 @@ function drop(event, id)
         else //si c'est drop sur un element
         {
             /*var indexDrop = parseInt(id);
-            
+
             div.id = indexDrop + 1;
             for(i = indexDrop; i < tabElements.length; i++) //incremmenter les id de tous les suivants
             {
                 tabElements[i].id++;
             }
-            
+
             tabElements.splice(indexDrop,0,div); //on le met à l'index indexDrop
             isDropped = 1;*/
         }
     }
-    newElement.onclick = edit(newElement);
-    
+    //newElement.onclick = edit(newElement);
+
     //tout afficher
-    
+
     removeElements();
-    
+
     showElements();
 }
 
@@ -187,7 +190,7 @@ function dragEventHandler(event)
 }
 
 function showElements()
-{		
+{
     tabElements.forEach(function(element){
         /*
         //Ajouter un petit espace entre chaque elements, celui ci doit répondre à un drop dessus
@@ -198,9 +201,9 @@ function showElements()
         espace.id = element.id-1;
         document.getElementById("dropper").appendChild(espace);
         */
-    
+
         document.getElementById("dropper").appendChild(element); //ajouter l'element
-        
+
     });
 }
 
@@ -212,10 +215,18 @@ function removeEdit(){
     document.getElementById("panneauConfig").innerHTML = "";
 }
 
-function edit(element){
+function edit(id){
+  alert(id);
+
+  formulaire = document.getElementById("dropper");
+  element = document.getElementById("div_"+id);
+  console.log(formulaire);
+  console.log(element);
+  /*
     console.log(element);
     removeEdit();
     document.getElementById("panneauConfig").appendChild(element);
+  */
     /*
     var champ = document.createElement("input");
     console.log(element.getElementsByTagName("p")[0].innerHTML);
