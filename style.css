@@ -47,5 +47,29 @@ form
     padding-top: 2%;
     padding-left: 3%;
     overflow-y: scroll;
+    padding-right: 3%;
+}
 
+.panneauConfig
+{
+    margin: 1em;
+    border: 1px solid black;
+    height: 92%;
+    background:rgba(199, 150, 59, 0.884);
+    padding-top: 2%;
+    padding-left: 3%;
+    overflow-y: scroll;
+    padding-right: 3%;
+}
+
+.champForm
+{
+    border: 1px solid black;
+    padding-top: 2%;
+    padding-left: 3%;
+}
+
+.space
+{
+    height: 2%;
 }
