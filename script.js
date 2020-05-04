@@ -32,7 +32,7 @@ class objectFormulaire{
 
         //Parametre div
             this.div.setAttribute("ondragover","allowDrop(event)");
-            this.div.setAttribute("ondrop","drop(event, this.id)");
+            this.div.setAttribute("ondrop","drop(event,"+this.id+")");
             this.div.setAttribute("class","champForm");
             this.div.setAttribute("onclick","edit("+this.id+")");
 
@@ -44,15 +44,17 @@ class objectFormulaire{
         }
 
 
+
     //Setters
 
-        set id(id){
-            this._idGlobal = nbId;
-            this.element.id = "element_" + nbId;
-            this.div.id = "div_" + nbId;
-            this.label.id = "label_" + nbId;
 
-            nbId++;
+        set id(id){
+            this._idGlobal = objectFormulaire.nbId;
+            this.element.id = "element_" + objectFormulaire.nbId;
+            this.div.id = "div_" + objectFormulaire.nbId;
+            this.label.id = "label_" + objectFormulaire.nbId;
+
+            objectFormulaire.nbId++;
         }
 
         set name(name){
@@ -106,8 +108,9 @@ class objectFormulaire{
         }
 
     }
+    objectFormulaire.nbId = 0;
 
-    var nbId = 0;
+
 /*
 
 
@@ -216,12 +219,25 @@ function removeEdit(){
 }
 
 function edit(id){
-  alert(id);
-
+  removeEdit();
   formulaire = document.getElementById("dropper");
-  element = document.getElementById("div_"+id);
   console.log(formulaire);
-  console.log(element);
+  var champ = document.createElement("input");
+  champ.setAttribute("id","champ_"+id);
+  console.log("1");
+  console.log(champ);
+  champ.value = document.getElementById("label_"+id).innerHTML;
+  console.log("2");
+  var bouton = document.createElement("button");
+  console.log("3");
+  panneauConfig.appendChild(champ);
+  console.log(document.getElementById("champ_"+id).innerHTML);
+  bouton.setAttribute("onclick","changeLabel("+id+")");
+  console.log("4");
+  bouton.innerHTML = "Mettre a jour le label";
+  console.log("5");
+  panneauConfig.appendChild(bouton);
+
   /*
     console.log(element);
     removeEdit();
@@ -234,4 +250,13 @@ function edit(id){
     var panneauConfig = document.getElementById("panneauConfig");
     panneauConfig.appendChild(champ);
     */
+}
+
+function changeLabel(id){
+  console.log(document.getElementById("label_"+id).innerHTML);
+  var newText = document.getElementById("champ_"+id).value;
+  console.log(newText);
+  document.getElementById("label_"+id).innerHTML = newText;
+  removeElements();
+  showElements();
 }
