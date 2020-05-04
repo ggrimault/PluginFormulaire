@@ -1,7 +1,7 @@
 class objectFormulaire{
 
     //Constructeur
-        constructor(id, name, type){
+        constructor(type){
 
 
         //Creation des objects
@@ -13,10 +13,13 @@ class objectFormulaire{
 
         //Parametre general
 
-            this.id = id;
-            this.name = name;
-            if(this.upperType != "select") {
+            this.id = objectFormulaire.nbId;
+            this.name = type;
+            if(this.upperType != "select" && this.upperType != "textArea") {
                 this.type = type;
+            }
+            if(this.upperType == "textArea"){
+                this.element.setAttribute("cols","72");
             }
             this._activated = true;
 
@@ -26,7 +29,6 @@ class objectFormulaire{
 
 
         //On sait pas ^^^^'
-            this._parameter = new Array();
             this._dependance = new Array();
 
 
@@ -36,10 +38,13 @@ class objectFormulaire{
             this.div.setAttribute("class","champForm");
             this.div.setAttribute("onclick","edit("+this.id+")");
 
+        //SI TEXTAREA
+
         //Creation des object et de la hiérarchie
             this.div.appendChild(this.label);
             this.div.appendChild(this.element);
-
+            
+            objectFormulaire.nbId++;
             return this.div;
         }
 
@@ -49,32 +54,36 @@ class objectFormulaire{
 
 
         set id(id){
-            this._idGlobal = objectFormulaire.nbId;
-            this.element.id = "element_" + objectFormulaire.nbId;
-            this.div.id = "div_" + objectFormulaire.nbId;
-            this.label.id = "label_" + objectFormulaire.nbId;
-
-            objectFormulaire.nbId++;
+            this._idGlobal = id;
+            this.element.id = "element_" + id;
+            this.div.id = "div_" + id;
+            this.label.id = "label_" + id;
         }
 
         set name(name){
-            this.element.name = name;
+            var leNom = name + "_" + objectFormulaire.nbId;
+            this.element.setAttribute("name",leNom);
+            this.div.setAttribute("name",leNom);
+            this.label.setAttribute("name",leNom);
         }
+
+        
 
         set upperType(type){
             var choosen;
-            if ( type == "text"){
-                choosen = "text";
-            } else if ( type == "select" ){
-                choosen = "select";
-            } else {
+            if( type != "text" && type != "select" && type != "textArea") {
                 choosen = "input";
+            } else {
+                choosen = type;
             }
             this._upperType = choosen;
         }
 
+        //probablement a çmodifier
         set type(type){
+            if(this.upperType != "textArea"){
             this.element.type = type;
+            }
         }
 
         switchActivated(){
@@ -92,11 +101,11 @@ class objectFormulaire{
         }
 
         get name(){
-            return this.element._name;
+            return this._name;
         }
 
         get type(){
-            return this.element._type;
+            return this._type;
         }
 
         get upperType(){
@@ -108,6 +117,8 @@ class objectFormulaire{
         }
 
     }
+
+    //varibla statique. La déclaration se fait bien de cette manière
     objectFormulaire.nbId = 0;
 
 
@@ -135,24 +146,7 @@ function drop(event, id)
 
     var typeIdTarget = event.dataTransfer.getData("text");
 
-    var newElement = new objectFormulaire(nbElements, nbElements, typeIdTarget);
-
-    //var div = document.createElement("DIV"); //div enveloppant tout l'element
-
-    //var label = document.createElement("p"); // creation du label de base
-    //var texteLabel = document.createTextNode(typeIdTarget);
-    //label.appendChild(texteLabel);
-
-    /*
-    div.setAttribute("ondragover","allowDrop(event)");
-    div.setAttribute("ondrop","drop(event, this.id)");
-    div.setAttribute("class","champForm");
-    div.setAttribute("onclick","edit(div)");
-
-
-    div.appendChild(label);
-    div.appendChild(newElement);
-    */
+    var newElement = new objectFormulaire(typeIdTarget);
 
     //classer dans le tableau et donner le num d'index en id au div du nouvel element
 
@@ -219,44 +213,57 @@ function removeEdit(){
 }
 
 function edit(id){
-  removeEdit();
-  formulaire = document.getElementById("dropper");
-  console.log(formulaire);
-  var champ = document.createElement("input");
-  champ.setAttribute("id","champ_"+id);
-  console.log("1");
-  console.log(champ);
-  champ.value = document.getElementById("label_"+id).innerHTML;
-  console.log("2");
-  var bouton = document.createElement("button");
-  console.log("3");
-  panneauConfig.appendChild(champ);
-  console.log(document.getElementById("champ_"+id).innerHTML);
-  bouton.setAttribute("onclick","changeLabel("+id+")");
-  console.log("4");
-  bouton.innerHTML = "Mettre a jour le label";
-  console.log("5");
-  panneauConfig.appendChild(bouton);
+    //On efface tout et on récupere la "div" selectionnée
+        removeEdit();
+        div = document.getElementById("div_"+id);
 
-  /*
-    console.log(element);
-    removeEdit();
-    document.getElementById("panneauConfig").appendChild(element);
-  */
-    /*
-    var champ = document.createElement("input");
-    console.log(element.getElementsByTagName("p")[0].innerHTML);
-    champ.value = element.getElementsByTagName("p")[0].innerHTML;
-    var panneauConfig = document.getElementById("panneauConfig");
-    panneauConfig.appendChild(champ);
-    */
+    //On affiche dans un input text le nom de la div
+        var champ;
+        champ = document.createElement("input");
+        champ.setAttribute("id","champ_"+id);
+        champ.value = document.getElementById("label_"+id).innerHTML;
+        panneauConfig.appendChild(champ);
+
+    //On crée un bouton qui permet de modifier le nom de la div
+        var bouton;
+        bouton = document.createElement("button");
+        bouton.setAttribute("onclick","changeLabel("+id+")");
+        bouton.innerHTML = "Mettre a jour le label";
+        panneauConfig.appendChild(bouton);
+        
+    //On affiche les options supplémentaire (dépendent du type et upperType de ObjectFormulaire)
+        var name_decomposed = div.getAttribute("name").split("_");    
+        var type = name_decomposed[0];
+        console.log(type);
+
+    //on adapte les actions possible
+        switch(div.classType.value){
+            case "text":
+                //Dans le cas TEXT
+                break;
+            case "textArea":
+                //Dans le cas TextArea
+                break;
+            case "inputText":
+                //Dans le cas de inputText
+                break;
+            case "checkbox":
+                //Dans le cas de checkbox
+                break;
+            case "radio":
+                //Dans le cas de radio
+                break;
+            case "select":
+                //Dans le cas de select
+                break;
+        }
 }
 
 function changeLabel(id){
-  console.log(document.getElementById("label_"+id).innerHTML);
-  var newText = document.getElementById("champ_"+id).value;
-  console.log(newText);
-  document.getElementById("label_"+id).innerHTML = newText;
-  removeElements();
-  showElements();
-}
+    console.log(document.getElementById("label_"+id).innerHTML);
+    var newText = document.getElementById("champ_"+id).value;
+    console.log(newText);
+    document.getElementById("label_"+id).innerHTML = newText;
+    removeElements();
+    showElements();
+    }
