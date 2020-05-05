@@ -1,5 +1,14 @@
 class objectFormulaire{
 
+    //variables
+        _idGlobal = nbElements;
+        _name;
+        _type;
+        _upperType;
+        _activated;
+       _required = true;
+        
+
     //Constructeur
         constructor(type){
 
@@ -13,18 +22,22 @@ class objectFormulaire{
 
         //Parametre general
 
-            this.id = objectFormulaire.nbId;
-            this.name = type;
+            this.leId = objectFormulaire.nbId;
+            this.leName = type;
             if(this.upperType != "select" && this.upperType != "textArea") {
-                this.type = type;
+                this.leType = type;
             }
             if(this.upperType == "textArea"){
                 this.element.setAttribute("cols","72");
             }
+            if(this.upperType == "text"){
+                this.element.required = false;
+            }
+            
             this._activated = true;
 
         //Parametre labels
-            var texteLabel = document.createTextNode("ID global : "+this.id);
+            var texteLabel = document.createTextNode("ID global : "+this.getLeId);
             this.label.appendChild(texteLabel);
 
 
@@ -34,9 +47,10 @@ class objectFormulaire{
 
         //Parametre div
             this.div.setAttribute("ondragover","allowDrop(event)");
-            this.div.setAttribute("ondrop","drop(event,"+this.id+")");
+            this.div.setAttribute("ondrop","drop(event,"+this.getLeId+")");
+            console.log(this.getLeId);
             this.div.setAttribute("class","champForm");
-            this.div.setAttribute("onclick","edit("+this.id+")");
+            this.div.setAttribute("onclick","edit("+this.getLeId+")");
 
         //SI TEXTAREA
 
@@ -53,14 +67,15 @@ class objectFormulaire{
     //Setters
 
 
-        set id(id){
+        set leId(id){
             this._idGlobal = id;
             this.element.id = "element_" + id;
             this.div.id = "div_" + id;
             this.label.id = "label_" + id;
         }
 
-        set name(name){
+
+        set leName(name){
             var leNom = name + "_" + objectFormulaire.nbId;
             this.element.setAttribute("name",leNom);
             this.div.setAttribute("name",leNom);
@@ -80,7 +95,7 @@ class objectFormulaire{
         }
 
         //probablement a çmodifier
-        set type(type){
+        set leType(type){
             if(this.upperType != "textArea"){
             this.element.type = type;
             }
@@ -89,22 +104,30 @@ class objectFormulaire{
         switchActivated(){
             if(this.isActivated == true){
                 this._activated = false;
+                this.element.required = false;
             } else {
                 this._activated = true;
+                this.element.required = true;
             }
         }
 
-
+        switchRequired(){
+            if(this.isRequired == true){
+                this._required = false;
+            }else{
+                this._required = true;
+            }
+        }
     //Getters
-        get id(){
+        get getLeId(){
             return this._idGlobal;
         }
 
-        get name(){
+        get leName(){
             return this._name;
         }
 
-        get type(){
+        get leType(){
             return this._type;
         }
 
@@ -114,6 +137,10 @@ class objectFormulaire{
 
         get isActivated(){
             return this._activated;
+        }
+
+        get isRequired(){
+            return this._required;
         }
 
     }
@@ -132,6 +159,7 @@ class objectFormulaire{
 
 
 var tabElements = new Array();
+var tabId = new Array();
 var nbElements = 0;
 var isDropped = 1; //Permet de savoir si l'element est "en l'air", c'est utilisé pour ne pas créer 2 element quand on le drop sur un element existant
 
@@ -155,6 +183,8 @@ function drop(event, id)
         {
             //div.id = tabElements.length + 1;
             tabElements.push(newElement);
+            console.log(typeof newElement);
+            tabId.push(newElement.getLeId);
             isDropped = 1;
         }
         else //si c'est drop sur un element
@@ -230,31 +260,41 @@ function edit(id){
         bouton.setAttribute("onclick","changeLabel("+id+")");
         bouton.innerHTML = "Mettre a jour le label";
         panneauConfig.appendChild(bouton);
-        
-    //On affiche les options supplémentaire (dépendent du type et upperType de ObjectFormulaire)
-        var name_decomposed = div.getAttribute("name").split("_");    
-        var type = name_decomposed[0];
-        console.log(type);
 
+    //On ajoute un saut de ligne
+        var sautDeLigne = document.createElement("br");
+        panneauConfig.appendChild(sautDeLigne);
+
+    //On ajoute le champ "requis"
+        addCheckBoxRequiredTo(panneauConfig, id);
+
+    //obtention du type de l'élément formulaire dans la div
+        theType = getTypeOf(id);
     //on adapte les actions possible
-        switch(div.classType.value){
+        switch(theType){
             case "text":
                 //Dans le cas TEXT
+                    //RIEN POUR LE MOMENT
                 break;
             case "textArea":
                 //Dans le cas TextArea
+                editTextArea(id);
                 break;
             case "inputText":
                 //Dans le cas de inputText
+                editInputText(id);
                 break;
             case "checkbox":
                 //Dans le cas de checkbox
+                editCheckbox(id);
                 break;
             case "radio":
                 //Dans le cas de radio
+                editRadio(id);
                 break;
             case "select":
                 //Dans le cas de select
+                editSelect(id);
                 break;
         }
 }
@@ -266,4 +306,46 @@ function changeLabel(id){
     document.getElementById("label_"+id).innerHTML = newText;
     removeElements();
     showElements();
+}
+
+function editTextArea(id){
+    var aTextArea = document.getElementById("element_"+id);//element central
+
+}
+
+function addCheckBoxRequiredTo(anElement, anId){
+    var checkbox = document.createElement("input");
+    checkbox.setAttribute("type","checkbox");
+    checkbox.setAttribute("id","required_"+anId);
+    checkbox.setAttribute("name","required_"+anId);
+
+    console.log(tabElements);
+    console.log(tabId);
+    console.log(tabElements[0].leId);
+//ON EST PAR LA, VOIR COMMENT STOCKER LE REQUIRED
+    checkbox.setAttribute("onclick","changeRequired("+anId+")");
+
+    var label = document.createElement("label");
+    label.setAttribute("for","required_"+anId);
+    label.innerHTML = "Requis";
+
+    anElement.appendChild(checkbox);
+    anElement.appendChild(label);
+}
+
+
+function changeRequired(anId){
+    console.log(anId);
+    if(document.getElementById("required_"+anId).checked){
+        document.getElementById("element_"+anId).required = true;
+    } else {
+        document.getElementById("element_"+anId).required = false;
     }
+}
+
+function getTypeOf(anId){
+    var name_decomposed = document.getElementById("div_"+anId).getAttribute("name").split("_");    
+    var theType = name_decomposed[0];
+    console.log(theType);
+    return theType;
+}
