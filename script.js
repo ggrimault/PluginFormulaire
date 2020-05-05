@@ -1,88 +1,34 @@
 class objectFormulaire{
 
     //variables
-        _idGlobal = nbElements;
+        _idGlobal;
         _name;
         _type;
         _upperType;
-        _activated;
-       _required = true;
+        _activated = true; //par défaut true
+        _required = true;  //par défaut true
+        _label;
         
-
     //Constructeur
         constructor(type){
-
-
-        //Creation des objects
-            this.div = document.createElement("DIV");
-            this.label = document.createElement("P");
-
+            this.id = objectFormulaire.nbId;
             this.upperType = type;
-            this.element = document.createElement(this.upperType);
-
-        //Parametre general
-
-            this.leId = objectFormulaire.nbId;
-            this.leName = type;
-            if(this.upperType != "select" && this.upperType != "textArea") {
-                this.leType = type;
-            }
-            if(this.upperType == "textArea"){
-                this.element.setAttribute("cols","72");
-            }
-            if(this.upperType == "text"){
-                this.element.required = false;
-            }
-            
-            this._activated = true;
-
-        //Parametre labels
-            var texteLabel = document.createTextNode("ID global : "+this.getLeId);
-            this.label.appendChild(texteLabel);
-
-
-        //On sait pas ^^^^'
-            this._dependance = new Array();
-
-
-        //Parametre div
-            this.div.setAttribute("ondragover","allowDrop(event)");
-            this.div.setAttribute("ondrop","drop(event,"+this.getLeId+")");
-            console.log(this.getLeId);
-            this.div.setAttribute("class","champForm");
-            this.div.setAttribute("onclick","edit("+this.getLeId+")");
-
-        //SI TEXTAREA
-
-        //Creation des object et de la hiérarchie
-            this.div.appendChild(this.label);
-            this.div.appendChild(this.element);
-            
-            objectFormulaire.nbId++;
-            return this.div;
+            this.type = type;
+            this.name = this.type + "_" + this.id;
+            this.label = "Element ID global " + this.id ;
         }
 
 
 
-    //Setters
+    //SET
 
-
-        set leId(id){
+        set id(id){
             this._idGlobal = id;
-            this.element.id = "element_" + id;
-            this.div.id = "div_" + id;
-            this.label.id = "label_" + id;
         }
 
-
-        set leName(name){
-            var leNom = name + "_" + objectFormulaire.nbId;
-            this.element.setAttribute("name",leNom);
-            this.div.setAttribute("name",leNom);
-            this.label.setAttribute("name",leNom);
+        set name(name){
+            this._name = name;
         }
-
-        
 
         set upperType(type){
             var choosen;
@@ -94,40 +40,32 @@ class objectFormulaire{
             this._upperType = choosen;
         }
 
-        //probablement a çmodifier
-        set leType(type){
-            if(this.upperType != "textArea"){
-            this.element.type = type;
-            }
+        set type(type){
+            this._type = type;
         }
 
-        switchActivated(){
-            if(this.isActivated == true){
-                this._activated = false;
-                this.element.required = false;
-            } else {
-                this._activated = true;
-                this.element.required = true;
-            }
+        set isActivated(bool){
+            this._activated = bool;
         }
 
-        switchRequired(){
-            if(this.isRequired == true){
-                this._required = false;
-            }else{
-                this._required = true;
-            }
+        set isRequired(bool){
+            this._required = bool;
         }
-    //Getters
-        get getLeId(){
+
+        set label(chaine){
+            this._label = chaine;
+        }
+
+    //GET
+        get id(){
             return this._idGlobal;
         }
 
-        get leName(){
+        get name(){
             return this._name;
         }
 
-        get leType(){
+        get type(){
             return this._type;
         }
 
@@ -143,23 +81,92 @@ class objectFormulaire{
             return this._required;
         }
 
-    }
+        get label(){
+            return this._label;
+        }
 
-    //varibla statique. La déclaration se fait bien de cette manière
+    //AUTRE
+
+        switchActivated(){
+            if(this.isActivated == true){
+                this._activated = false;
+            } else {
+                this._activated = true;
+            }
+        }
+
+        switchRequired(){
+            if(this.isRequired == true){
+                this._required = false;
+            }else{
+                this._required = true;
+            }
+        }
+
+        refreshLabel(){
+            console.log("On recherche : label_" + this.id);
+            document.getElementById("label_" + this.id).innerHTML = this.label;
+        }
+
+        editLabel(chaine){
+            this.label = chaine;
+            this.refreshLabel();
+        }
+
+        createElementInside(father){
+            //Creation des objects
+                let div = document.createElement("DIV");
+                let label = document.createElement("P");
+                let element = document.createElement(this.upperType);
+
+            //Attribution des ID
+                div.id = "div_" + this.id;
+                label.id = "label_" + this.id;
+                console.log("Attribution de l'id: " + label.id);
+                element.id = "element_" + this.id;
+
+            //Attribution des NAME
+                div.name = this.type + "_" + this.id;
+                label.name = this.type + "_" + this.id;
+                element.name = this.type + "_" + this.id;
+            
+            //Si le type est TextArea ou select, alors ELEMENT n'aura pas de type
+                if (this.type == "textArea") {
+                    element.setAttribute("cols","72");
+                } else if (this.type != "select"){
+                    element.setAttribute("type",this.type);
+                }
+
+            //Parametrage du DIV
+                div.setAttribute("ondragover","allowDrop(event)");
+                div.setAttribute("ondrop","drop(event," + this.id + ")");
+                div.setAttribute("class","champForm");
+                div.setAttribute("onclick","edit(" + this.id + ")");
+
+
+            //Creation de la hiérarchie
+                div.appendChild(label);
+                div.appendChild(element);
+                document.getElementById(father).appendChild(div);
+
+            //Ecriture du Text dans le LABEL
+                this.refreshLabel();
+
+            //Incrémentation de l'ID
+                objectFormulaire.nbId++;
+            }
+
+    }
+    //variable statique. La déclaration se fait en dessous de la classe.
     objectFormulaire.nbId = 0;
 
-
 /*
-
-
-    FIN DE LA CLASSE, DEBUT 'SCRIPT'
-
-
+-----------------------------------------------------------------------------------------------------
+--------------------- FIN DE LA CLASSE, DEBUT 'SCRIPT' ----------------------------------------------
+-----------------------------------------------------------------------------------------------------
 */
 
-
-var tabElements = new Array();
-var tabId = new Array();
+let dictionnaireElements = new Map;
 var nbElements = 0;
 var isDropped = 1; //Permet de savoir si l'element est "en l'air", c'est utilisé pour ne pas créer 2 element quand on le drop sur un element existant
 
@@ -170,7 +177,7 @@ function allowDrop(event) {
 function drop(event, id)
 {
     event.preventDefault();
-    //creer element de bon type selon l'event target dans un div avec 2 br
+    //creer element de bon type
 
     var typeIdTarget = event.dataTransfer.getData("text");
 
@@ -182,9 +189,9 @@ function drop(event, id)
         if(id == "dropper") //si c'est juste sur le dropper, on le met à la fin de la ligne
         {
             //div.id = tabElements.length + 1;
-            tabElements.push(newElement);
-            console.log(typeof newElement);
-            tabId.push(newElement.getLeId);
+            dictionnaireElements.set(newElement.id, newElement);
+            console.log("On est sur l'élement d'id:" + newElement.id);
+            console.log(dictionnaireElements.get(newElement.id));
             isDropped = 1;
         }
         else //si c'est drop sur un element
@@ -218,7 +225,7 @@ function dragEventHandler(event)
 
 function showElements()
 {
-    tabElements.forEach(function(element){
+    dictionnaireElements.forEach(function(element){
         /*
         //Ajouter un petit espace entre chaque elements, celui ci doit répondre à un drop dessus
         var espace = document.createElement("div");
@@ -228,9 +235,7 @@ function showElements()
         espace.id = element.id-1;
         document.getElementById("dropper").appendChild(espace);
         */
-
-        document.getElementById("dropper").appendChild(element); //ajouter l'element
-
+        element.createElementInside("dropper");
     });
 }
 
@@ -242,29 +247,44 @@ function removeEdit(){
     document.getElementById("panneauConfig").innerHTML = "";
 }
 
-function edit(id){
-    //On efface tout et on récupere la "div" selectionnée
+function edit(idCourant){
+    //On efface tout dans la colonne d'edition
         removeEdit();
-        div = document.getElementById("div_"+id);
+        let elementCourant = dictionnaireElements.get(idCourant);
+        console.log(elementCourant);
+    //On affiche dans un input text le LABEL
+        //Creation de l'input
+            let champ;
+            champ = document.createElement("input");
+            champ.setAttribute("id","champ_"+idCourant);
+            panneauConfig.appendChild(champ);
+        //Affectation de la chaine
+            champ.value = elementCourant.label;
+            console.log("value : " + champ.value);
+            console.log(typeof champ.value);
 
-    //On affiche dans un input text le nom de la div
-        var champ;
-        champ = document.createElement("input");
-        champ.setAttribute("id","champ_"+id);
-        champ.value = document.getElementById("label_"+id).innerHTML;
-        panneauConfig.appendChild(champ);
-
-    //On crée un bouton qui permet de modifier le nom de la div
-        var bouton;
+    //On crée un bouton qui permet de modifier le LABEL
+        let bouton;
         bouton = document.createElement("button");
-        bouton.setAttribute("onclick","changeLabel("+id+")");
-        bouton.innerHTML = "Mettre a jour le label";
+        bouton.id = "btn_" + idCourant;
         panneauConfig.appendChild(bouton);
+        bouton.setAttribute("onclick", elementCourant.editLabel(+"(getInputValue("+idCourant+")"));
+        console.log("sapasse");
+        //bouton.setAttribute("onclick", "test()");
+        bouton.innerHTML = "Mettre a jour le label";
 
     //On ajoute un saut de ligne
-        var sautDeLigne = document.createElement("br");
-        panneauConfig.appendChild(sautDeLigne);
+        let sautDeLigne = document.createElement("br");
+        panneauConfig.appendChild(sautDeLigne);}
 
+    function test(id){
+        console.log("tout est nique, surtout l'id"+id);
+    }
+
+    function getInputValue(anId){
+        return document.getElementById("champ_"+anId).value;
+    }
+/*
     //On ajoute le champ "requis"
         addCheckBoxRequiredTo(panneauConfig, id);
 
@@ -298,7 +318,7 @@ function edit(id){
                 break;
         }
 }
-
+/*
 function changeLabel(id){
     console.log(document.getElementById("label_"+id).innerHTML);
     var newText = document.getElementById("champ_"+id).value;
@@ -348,4 +368,4 @@ function getTypeOf(anId){
     var theType = name_decomposed[0];
     console.log(theType);
     return theType;
-}
+}*/
