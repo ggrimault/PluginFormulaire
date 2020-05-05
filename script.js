@@ -8,7 +8,7 @@ class objectFormulaire{
         _activated = true; //par défaut true
         _required = true;  //par défaut true
         _label;
-        
+
     //Constructeur
         constructor(type){
             this.id = objectFormulaire.nbId;
@@ -129,7 +129,7 @@ class objectFormulaire{
                 div.name = this.type + "_" + this.id;
                 label.name = this.type + "_" + this.id;
                 element.name = this.type + "_" + this.id;
-            
+
             //Si le type est TextArea ou select, alors ELEMENT n'aura pas de type
                 if (this.type == "textArea") {
                     element.setAttribute("cols","72");
@@ -268,7 +268,8 @@ function edit(idCourant){
         bouton = document.createElement("button");
         bouton.id = "btn_" + idCourant;
         panneauConfig.appendChild(bouton);
-        bouton.setAttribute("onclick", elementCourant.editLabel(+"(getInputValue("+idCourant+")"));
+        //bouton.addEventListener("click",getInputValue(idCourant));
+        bouton.setAttribute("onclick", "getInputValueAndEditLabel("+idCourant+")");
         console.log("sapasse");
         //bouton.setAttribute("onclick", "test()");
         bouton.innerHTML = "Mettre a jour le label";
@@ -281,8 +282,11 @@ function edit(idCourant){
         console.log("tout est nique, surtout l'id"+id);
     }
 
-    function getInputValue(anId){
-        return document.getElementById("champ_"+anId).value;
+    function getInputValueAndEditLabel(anId){
+        console.log("Dans getInputValue "+document.getElementById("champ_"+anId).value);
+        let elementCourant = dictionnaireElements.get(anId);
+        elementCourant.editLabel(document.getElementById("champ_"+anId).value);
+        //return document.getElementById("champ_"+anId).value;
     }
 /*
     //On ajoute le champ "requis"
@@ -364,7 +368,7 @@ function changeRequired(anId){
 }
 
 function getTypeOf(anId){
-    var name_decomposed = document.getElementById("div_"+anId).getAttribute("name").split("_");    
+    var name_decomposed = document.getElementById("div_"+anId).getAttribute("name").split("_");
     var theType = name_decomposed[0];
     console.log(theType);
     return theType;
