@@ -8,6 +8,8 @@ class objectFormulaire{
         _activated = true; //par défaut true
         _required = true;  //par défaut true
         _label;
+        parameter;
+        _nbParameter;
 
     //Constructeur
         constructor(type){
@@ -16,6 +18,12 @@ class objectFormulaire{
             this.type = type;
             this.name = this.type + "_" + this.id;
             this.label = "Element ID global " + this.id ;
+            this.parameter = new Map();
+            this.parameter.set("label",new Array());
+            this.parameter.set("checked",new Array());
+            this.parameter.get("label").push("Element");
+            this.parameter.get("checked").push(false);
+            this.nbParameter = 0;
         }
 
 
@@ -56,6 +64,10 @@ class objectFormulaire{
             this._label = chaine;
         }
 
+        set nbParameter(nb){
+            this._nbParameter = nb;
+        }
+
     //GET
         get id(){
             return this._idGlobal;
@@ -83,6 +95,10 @@ class objectFormulaire{
 
         get label(){
             return this._label;
+        }
+
+        get nbParameter(){
+            return this._nbParameter;
         }
 
     //AUTRE
@@ -123,7 +139,7 @@ class objectFormulaire{
                 div.id = "div_" + this.id;
                 label.id = "label_" + this.id;
                 console.log("Attribution de l'id: " + label.id);
-                element.id = "element_" + this.id;
+                element.id = "element_" + this.id +".0";
 
             //Attribution des NAME
                 div.name = this.type + "_" + this.id;
@@ -131,10 +147,12 @@ class objectFormulaire{
                 element.name = this.type + "_" + this.id;
 
             //Si le type est TextArea ou select, alors ELEMENT n'aura pas de type
-                if (this.type == "textArea") {
+                if (this.type == "text"){}//Ne rien faire
+                else if (this.type == "textArea") {
                     element.setAttribute("cols","72");
-                } else if (this.type != "select"){
+                } else if (this.type != "select" ){
                     element.setAttribute("type",this.type);
+                    console.log(this.parameter);
                 }
 
             //Parametrage du DIV
@@ -142,7 +160,6 @@ class objectFormulaire{
                 div.setAttribute("ondrop","drop(event," + this.id + ")");
                 div.setAttribute("class","champForm");
                 div.setAttribute("onclick","edit(" + this.id + ")");
-
 
             //Creation de la hiérarchie
                 div.appendChild(label);
@@ -154,6 +171,44 @@ class objectFormulaire{
 
             //Incrémentation de l'ID
                 objectFormulaire.nbId++;
+            }
+
+            deleteDisplayedParameters(){
+
+                let currentDiv = document.getElementById("div_"+this.id);
+                let listParameter = document.getElementsByName(this.type+"_"+this.id);
+                let it = 0;
+                console.log("///////////////////////");
+                console.log("Liste des objts qui doivent disparaitre :  ");
+                console.log(listParameter);
+                listParameter.forEach(function(parameter){
+                    console.log("deleted n°"+it+", avec element suivant: ");
+                    console.log(parameter);
+                    console.log("----------");
+                    it++;
+                    currentDiv.removeChild(parameter);
+                });
+                for(let ite = 0; ite < currentDiv.getElementsByTagName("input").length; ite++){
+                    console.log(ite);
+                }
+
+
+/*
+                console.log("element_"+this.id+"."+i);
+                console.log(document.getElementById("element_"+this.id+"."+i));
+                document.getElementById("div_"+this.id).removeChild(document.getElementById("element_"+this.id+"."+i));
+            */}
+
+
+            displayParameters(){
+                this.deleteDisplayedParameters();
+                for(let i = 0; i < this.nbParameter; i++){
+                    let element = document.createElement(this.upperType);
+                    element.setAttribute("type",this.type);
+                    element.setAttribute("id", "element_" + this.id + "." + i);
+                    element.setAttribute("name", this.type + "_" + this.id);
+                    document.getElementById("div_"+this.id).appendChild(element);      
+                }
             }
 
     }
@@ -268,108 +323,109 @@ function edit(idCourant){
         bouton = document.createElement("button");
         bouton.id = "btn_" + idCourant;
         panneauConfig.appendChild(bouton);
-        //bouton.addEventListener("click",getInputValue(idCourant));
         bouton.setAttribute("onclick", "getInputValueAndEditLabel("+idCourant+")");
-        console.log("sapasse");
-        //bouton.setAttribute("onclick", "test()");
         bouton.innerHTML = "Mettre a jour le label";
 
     //On ajoute un saut de ligne
-        let sautDeLigne = document.createElement("br");
-        panneauConfig.appendChild(sautDeLigne);}
+        panneauConfig.appendChild(document.createElement("br"));
+        panneauConfig.appendChild(document.createElement("br"));
 
-    function test(id){
-        console.log("tout est nique, surtout l'id"+id);
+    //On crée une checkbox permettant de faire du champ un champ requis ou non
+        createCheckBoxRequired(idCourant);
+
+    //On ajoute un saut de ligne
+        panneauConfig.appendChild(document.createElement("br"));
+        panneauConfig.appendChild(document.createElement("br"));
+
+    //On crée une checkbox permettant de faire du champ un champ actif ou non
+        createCheckBoxActivated(idCourant);
+
+    //On ajoute un saut de ligne
+        panneauConfig.appendChild(document.createElement("br"));
+        panneauConfig.appendChild(document.createElement("br"));
+
+        switch(elementCourant.type){
+            case "checkbox":
+                editCheckBox(elementCourant);
+                break;
+            case "radio":
+                editRadio(elementCourant);
+                break;
+            case "select":
+                editSelect(elementCourant);
+                break;
+            default:
+                //lalala
+                break;
+        }
+    }
+
+    function test(){
+        let currentElement = dictionnaireElements.get(0);
+        currentElement.parameter.get("label").push("Parametre 1");
+        currentElement.parameter.get("label").push("Parametre 2");
+        currentElement.nbParameter = 2;
+        currentElement.displayParameters();
     }
 
     function getInputValueAndEditLabel(anId){
         console.log("Dans getInputValue "+document.getElementById("champ_"+anId).value);
         let elementCourant = dictionnaireElements.get(anId);
         elementCourant.editLabel(document.getElementById("champ_"+anId).value);
-        //return document.getElementById("champ_"+anId).value;
     }
-/*
-    //On ajoute le champ "requis"
-        addCheckBoxRequiredTo(panneauConfig, id);
 
-    //obtention du type de l'élément formulaire dans la div
-        theType = getTypeOf(id);
-    //on adapte les actions possible
-        switch(theType){
-            case "text":
-                //Dans le cas TEXT
-                    //RIEN POUR LE MOMENT
-                break;
-            case "textArea":
-                //Dans le cas TextArea
-                editTextArea(id);
-                break;
-            case "inputText":
-                //Dans le cas de inputText
-                editInputText(id);
-                break;
-            case "checkbox":
-                //Dans le cas de checkbox
-                editCheckbox(id);
-                break;
-            case "radio":
-                //Dans le cas de radio
-                editRadio(id);
-                break;
-            case "select":
-                //Dans le cas de select
-                editSelect(id);
-                break;
+    function swapRequis(anId){
+        let elementCourant = dictionnaireElements.get(anId);
+        elementCourant.switchRequired();
+        console.log(elementCourant);
+    }
+
+    function swapActif(anId){
+        let elementCourant = dictionnaireElements.get(anId);
+        elementCourant.switchActivated();
+        console.log(elementCourant);
+    }
+
+    function createCheckBoxRequired(anId){
+        let elementCourant = dictionnaireElements.get(anId);
+        console.log("JUFIBGVEO8IYF GHBER8Z7IFGE8AZF"+elementCourant);
+        let checkboxRequis = document.createElement("input");
+        checkboxRequis.setAttribute("type","checkbox");
+        checkboxRequis.setAttribute("id","checkboxRequis_"+anId);
+        if(elementCourant.isRequired == true){
+            checkboxRequis.setAttribute("checked","");
         }
-}
-/*
-function changeLabel(id){
-    console.log(document.getElementById("label_"+id).innerHTML);
-    var newText = document.getElementById("champ_"+id).value;
-    console.log(newText);
-    document.getElementById("label_"+id).innerHTML = newText;
-    removeElements();
-    showElements();
-}
+        checkboxRequis.setAttribute("onclick","swapRequis("+anId+")");
 
-function editTextArea(id){
-    var aTextArea = document.getElementById("element_"+id);//element central
+        let champRequis = document.createElement("label");
+        champRequis.setAttribute("for","checkboxRequis_"+anId);
+        champRequis.innerHTML = "Requis";
 
-}
-
-function addCheckBoxRequiredTo(anElement, anId){
-    var checkbox = document.createElement("input");
-    checkbox.setAttribute("type","checkbox");
-    checkbox.setAttribute("id","required_"+anId);
-    checkbox.setAttribute("name","required_"+anId);
-
-    console.log(tabElements);
-    console.log(tabId);
-    console.log(tabElements[0].leId);
-//ON EST PAR LA, VOIR COMMENT STOCKER LE REQUIRED
-    checkbox.setAttribute("onclick","changeRequired("+anId+")");
-
-    var label = document.createElement("label");
-    label.setAttribute("for","required_"+anId);
-    label.innerHTML = "Requis";
-
-    anElement.appendChild(checkbox);
-    anElement.appendChild(label);
-}
-
-
-function changeRequired(anId){
-    console.log(anId);
-    if(document.getElementById("required_"+anId).checked){
-        document.getElementById("element_"+anId).required = true;
-    } else {
-        document.getElementById("element_"+anId).required = false;
+        let panneauConfig = document.getElementById("panneauConfig");
+        panneauConfig.appendChild(checkboxRequis);
+        panneauConfig.appendChild(champRequis);
     }
-}
 
-function getTypeOf(anId){
-    var name_decomposed = document.getElementById("div_"+anId).getAttribute("name").split("_");
-    var theType = name_decomposed[0];
-    console.log(theType);
-    return theType;
-}*/
+    function createCheckBoxActivated(anId){
+        let elementCourant = dictionnaireElements.get(anId);
+        console.log("JUFIBGVEO8IYF GHBER8Z7IFGE8AZF"+elementCourant);
+        let checkboxActif = document.createElement("input");
+        checkboxActif.setAttribute("type","checkbox");
+        checkboxActif.setAttribute("id","checkboxActif_"+anId);
+        if(elementCourant.isActivated == true){
+            checkboxActif.setAttribute("checked","");
+        }
+        checkboxActif.setAttribute("onclick","swapActif("+anId+")");
+
+        let champActif = document.createElement("label");
+        champActif.setAttribute("for","checkboxActif_"+anId);
+        champActif.innerHTML = "Activé";
+
+        let panneauConfig = document.getElementById("panneauConfig");
+        panneauConfig.appendChild(checkboxActif);
+        panneauConfig.appendChild(champActif);
+    }
+
+    function editCheckBox(anElement){
+
+    }
