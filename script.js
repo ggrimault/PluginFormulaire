@@ -23,7 +23,7 @@ class objectFormulaire{
             this.parameter.set("checked",new Array());
             this.parameter.get("label").push("Element");
             this.parameter.get("checked").push(false);
-            this.nbParameter = 0;
+            this.nbParameter = 1;
         }
 
 
@@ -177,22 +177,31 @@ class objectFormulaire{
 
                 let currentDiv = document.getElementById("div_"+this.id);
                 let listParameter = document.getElementsByName(this.type+"_"+this.id);
-                let it = 0;
+                let listLabel = document.getElementsByName("label_"+this.id);
+                let listBr = document.getElementsByName("br_"+this.id);
+                let it = listParameter.length;
                 console.log("///////////////////////");
                 console.log("Liste des objts qui doivent disparaitre :  ");
                 console.log(listParameter);
-                listParameter.forEach(function(parameter){
+                for(let i =listParameter.length -1; i>=0; i--)
+                {
                     console.log("deleted n°"+it+", avec element suivant: ");
-                    console.log(parameter);
+                    console.log(listParameter[i]);
                     console.log("----------");
                     it++;
-                    currentDiv.removeChild(parameter);
-                });
+                    currentDiv.removeChild(listParameter[i]);
+                    console.log("Après le removeChild");
+                    console.log(listParameter[i]);
+                }
+                for(let i = listBr.length-1; i>=0; i--){
+                  currentDiv.removeChild(listBr[i]);
+                }
+                for(let i = listLabel.length-1; i>=0; i--){
+                  currentDiv.removeChild(listLabel[i]);
+                }
                 for(let ite = 0; ite < currentDiv.getElementsByTagName("input").length; ite++){
                     console.log(ite);
                 }
-
-
 /*
                 console.log("element_"+this.id+"."+i);
                 console.log(document.getElementById("element_"+this.id+"."+i));
@@ -204,10 +213,20 @@ class objectFormulaire{
                 this.deleteDisplayedParameters();
                 for(let i = 0; i < this.nbParameter; i++){
                     let element = document.createElement(this.upperType);
+                    let label = document.createElement("label");
                     element.setAttribute("type",this.type);
                     element.setAttribute("id", "element_" + this.id + "." + i);
                     element.setAttribute("name", this.type + "_" + this.id);
-                    document.getElementById("div_"+this.id).appendChild(element);      
+                    label.setAttribute("for",element.getAttribute("name"));
+                    label.setAttribute("name", "label_" + this.id);
+                    label.innerHTML = element.getAttribute("id");
+                    console.log("Affichage de :");
+                    console.log(element);
+                    document.getElementById("div_"+this.id).appendChild(element);
+                    document.getElementById("div_"+this.id).appendChild(label);
+                    let br = document.createElement("br");
+                    br.setAttribute("name","br_"+this.id);
+                    document.getElementById("div_"+this.id).appendChild(br);
                 }
             }
 
@@ -364,7 +383,7 @@ function edit(idCourant){
         let currentElement = dictionnaireElements.get(0);
         currentElement.parameter.get("label").push("Parametre 1");
         currentElement.parameter.get("label").push("Parametre 2");
-        currentElement.nbParameter = 2;
+        currentElement.nbParameter++;
         currentElement.displayParameters();
     }
 
