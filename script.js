@@ -21,7 +21,7 @@ class objectFormulaire{
             this.parameter = new Map();
             this.parameter.set("label",new Array());
             this.parameter.set("checked",new Array());
-            this.parameter.get("label").push("Element");
+            this.parameter.get("label").push("parametre");
             this.parameter.get("checked").push(false);
             this.nbParameter = 1;
         }
@@ -165,6 +165,9 @@ class objectFormulaire{
                 div.appendChild(label);
                 div.appendChild(element);
                 document.getElementById(father).appendChild(div);
+                if(this.type == "checkbox" || this.type == "radio"){
+                    this.displayParameters();
+                }
 
             //Ecriture du Text dans le LABEL
                 this.refreshLabel();
@@ -194,19 +197,13 @@ class objectFormulaire{
                     console.log(listParameter[i]);
                 }
                 for(let i = listBr.length-1; i>=0; i--){
-                  currentDiv.removeChild(listBr[i]);
+                    currentDiv.removeChild(listBr[i]);
                 }
                 for(let i = listLabel.length-1; i>=0; i--){
-                  currentDiv.removeChild(listLabel[i]);
+                    currentDiv.removeChild(listLabel[i]);
                 }
-                for(let ite = 0; ite < currentDiv.getElementsByTagName("input").length; ite++){
-                    console.log(ite);
-                }
-/*
-                console.log("element_"+this.id+"."+i);
-                console.log(document.getElementById("element_"+this.id+"."+i));
-                document.getElementById("div_"+this.id).removeChild(document.getElementById("element_"+this.id+"."+i));
-            */}
+               
+            }
 
 
             displayParameters(){
@@ -214,21 +211,51 @@ class objectFormulaire{
                 for(let i = 0; i < this.nbParameter; i++){
                     let element = document.createElement(this.upperType);
                     let label = document.createElement("label");
+
                     element.setAttribute("type",this.type);
                     element.setAttribute("id", "element_" + this.id + "." + i);
                     element.setAttribute("name", this.type + "_" + this.id);
+
                     label.setAttribute("for",element.getAttribute("name"));
                     label.setAttribute("name", "label_" + this.id);
-                    label.innerHTML = element.getAttribute("id");
+                    label.setAttribute("id", "label_" + this.id + "." + i);
+
+                    let valueLabel = this.parameter.get("label")[i];
+                    label.innerHTML = valueLabel;
+
                     console.log("Affichage de :");
                     console.log(element);
+
                     document.getElementById("div_"+this.id).appendChild(element);
                     document.getElementById("div_"+this.id).appendChild(label);
+
                     let br = document.createElement("br");
                     br.setAttribute("name","br_"+this.id);
+
                     document.getElementById("div_"+this.id).appendChild(br);
                 }
             }
+
+            addParameter(label, boolean){
+                this.parameter.get("label").push(label);
+                this.parameter.get("checked").push(boolean);
+                this.nbParameter++;
+                console.log("Vous etes dans addParameter: méthode de classe");
+            }
+
+            deleteParameter(finId){
+                this.parameter.get("label").splice(finId, finId+1);
+                this.parameter.get("checked").splice(finId, finId+1);
+            }
+
+            editParameterLabel(finId, label){
+                this.parameter.get("label")[finId] = label;
+            }
+
+            editParameterChecked(finId, boolean){
+                this.parameter.get("checked")[finId] = boolean;
+            }
+
 
     }
     //variable statique. La déclaration se fait en dessous de la classe.
@@ -363,12 +390,19 @@ function edit(idCourant){
         panneauConfig.appendChild(document.createElement("br"));
         panneauConfig.appendChild(document.createElement("br"));
 
+    //On crée la div des parametres
+        divParameter = document.createElement("div");
+        divParameter.setAttribute("id", "divParameter");
+        panneauConfig.appendChild(divParameter);
+
         switch(elementCourant.type){
             case "checkbox":
                 editCheckBox(elementCourant);
+                createBtnAddParameter(elementCourant);
                 break;
             case "radio":
                 editRadio(elementCourant);
+                createBtnAddParameter(elementCourant);
                 break;
             case "select":
                 editSelect(elementCourant);
@@ -445,6 +479,90 @@ function edit(idCourant){
         panneauConfig.appendChild(champActif);
     }
 
-    function editCheckBox(anElement){
+    function editParametersLabel(elementCourant){
+        let label = document.createElement("p");
+        label.innerHTML = "Edition des paramètres";
+        
+        let divParameter = document.getElementById("divParameter");
+        console.log("Obj Courant: ");
+        console.log(elementCourant);
+        console.log(dictionnaireElements);
+        divParameter.appendChild(document.createElement("br"));
+        divParameter.appendChild(document.createElement("br"));
 
+        divParameter.appendChild(label);
+
+        //On affiche dans un input text le LABEL
+            //Creation de l'input
+                let lesInputs = document.getElementById("div_"+elementCourant.id).getElementsByTagName("input");
+                console.log(lesInputs);
+                console.log(lesInputs.length);
+                for(let i = 0; i < lesInputs.length; i++){
+                    let champ = document.createElement("input");
+                    champ.setAttribute("id","champ_"+lesInputs[i].id.split("_")[1]);
+                    divParameter.appendChild(champ);
+                    champ.value = elementCourant.parameter.get("label")[i];
+                    
+                    let btn = document.createElement("button");
+                    btn.setAttribute("id","editLabelBtn");
+                    btn.innerHTML = "Appliquer Label";
+                    console.log("----sh<ijowbfgvseriopugvh szrçipughisoprzu<ghçzershg");
+                    console.log(lesInputs);
+                    let leId = lesInputs[i].getAttribute("id").split("_")[1];
+                    let idDebut = leId.split(".")[0];
+                    let idSuite = leId.split(".")[1];
+                    console.log("LES ID : "+idDebut+"  ET  " + idSuite);
+                    btn.setAttribute("onclick","displayEditionParameter("+idDebut+","+idSuite+")");
+                    divParameter.appendChild(btn);
+                   
+
+                    divParameter.appendChild(document.createElement("br"));
+                }
+    }
+
+    function displayEditionParameter(idDebut, idFin){
+        let anId = idDebut +"."+idFin;
+        console.log("On prend la valeur de : " + "champ_"+anId);
+        console.log("valeur : "+document.getElementById("champ_"+anId).value);
+        console.log("On va chercher dans la valeur de : " + "label_"+anId);
+        let newValue = document.getElementById("champ_"+anId).value;
+        console.log(document.getElementById("label_"+anId));
+        document.getElementById("label_"+anId).innerHTML = newValue;
+    }
+
+    function editCheckBox(elementCourant){
+        editParametersLabel(elementCourant);
+    }
+
+    function editRadio(elementCourant){
+        editParametersLabel(elementCourant);
+    }
+
+    function addParameter(idCourant){
+        console.log(idCourant);
+        let elementCourant = dictionnaireElements.get(idCourant);
+        console.log("samarcheeeeeee");
+        console.log(elementCourant);
+        elementCourant.addParameter("parametre","false");
+        elementCourant.displayParameters();
+        edit(idCourant);
+
+
+    }
+
+    function test(){
+        let currentElement = dictionnaireElements.get(0);
+        currentElement.parameter.get("label").push("Parametre 1");
+        currentElement.parameter.get("label").push("Parametre 2");
+        currentElement.nbParameter++;
+        currentElement.displayParameters();
+    }
+
+    function createBtnAddParameter(elementCourant){
+        let btn = document.createElement("button");
+        btn.setAttribute("id","addParameterBtn");
+        btn.innerHTML = "Ajouter Parametre";
+        btn.setAttribute("onclick","addParameter("+elementCourant.id+")");
+        document.getElementById("panneauConfig").appendChild(btn);
+       
     }
