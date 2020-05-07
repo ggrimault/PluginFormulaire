@@ -403,6 +403,7 @@ function edit(idCourant){
             case "radio":
                 editRadio(elementCourant);
                 createBtnAddParameter(elementCourant);
+
                 break;
             case "select":
                 editSelect(elementCourant);
@@ -502,32 +503,64 @@ function edit(idCourant){
                     champ.setAttribute("id","champ_"+lesInputs[i].id.split("_")[1]);
                     divParameter.appendChild(champ);
                     champ.value = elementCourant.parameter.get("label")[i];
-                    
-                    let btn = document.createElement("button");
-                    btn.setAttribute("id","editLabelBtn");
-                    btn.innerHTML = "Appliquer Label";
-                    console.log("----sh<ijowbfgvseriopugvh szrçipughisoprzu<ghçzershg");
-                    console.log(lesInputs);
+
                     let leId = lesInputs[i].getAttribute("id").split("_")[1];
                     let idDebut = leId.split(".")[0];
                     let idSuite = leId.split(".")[1];
+                    
+                    let btnEditLabel = document.createElement("button");
+                    btnEditLabel.setAttribute("id","editLabelBtn");
+                    btnEditLabel.innerHTML = "Appliquer Label";
                     console.log("LES ID : "+idDebut+"  ET  " + idSuite);
-                    btn.setAttribute("onclick","displayEditionParameter("+idDebut+","+idSuite+")");
-                    divParameter.appendChild(btn);
-                   
+                    btnEditLabel.setAttribute("onclick","displayEditionParameter("+idDebut+","+idSuite+","+i+")");
+                    divParameter.appendChild(btnEditLabel);
 
+                    let btnCheck_Uncheck = document.createElement("button");
+                    btnCheck_Uncheck.setAttribute("id","check_uncheckBtn");
+                    btnCheck_Uncheck.innerHTML = "coché/decoche";
+                    console.log("LES ID : "+idDebut+"  ET  " + idSuite);
+                    btnCheck_Uncheck.setAttribute("onclick","displayCheckParameter("+idDebut+","+idSuite+")");
+                    divParameter.appendChild(btnCheck_Uncheck);
+                   
                     divParameter.appendChild(document.createElement("br"));
                 }
     }
 
-    function displayEditionParameter(idDebut, idFin){
+    function displayEditionParameter(idDebut, idFin, i){
         let anId = idDebut +"."+idFin;
+
         console.log("On prend la valeur de : " + "champ_"+anId);
         console.log("valeur : "+document.getElementById("champ_"+anId).value);
         console.log("On va chercher dans la valeur de : " + "label_"+anId);
-        let newValue = document.getElementById("champ_"+anId).value;
         console.log(document.getElementById("label_"+anId));
+
+        let newValue = document.getElementById("champ_"+anId).value;
         document.getElementById("label_"+anId).innerHTML = newValue;
+
+
+        let elementCourant = dictionnaireElements.get(idDebut);
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        console.log(elementCourant);
+        console.log(elementCourant.parameter.get("label")[i]);
+        elementCourant.parameter.get("label")[i] = newValue;
+        console.log(elementCourant.parameter.get("label")[i]);
+    }
+
+    function displayCheckParameter(idDebut, idFin){
+        let anId = idDebut +"."+idFin;
+
+        console.log("On prend la valeur de : " + "champ_"+anId);
+        console.log("valeur : "+document.getElementById("champ_"+anId).value);
+        console.log("On va chercher dans la valeur de : " + "label_"+anId);
+        console.log(document.getElementById("label_"+anId));
+
+        let anElement = document.getElementById("element_"+anId);
+        
+        if(anElement.checked == true){
+            anElement.checked = false;
+        } else if (anElement.checked == false){
+            anElement.checked = true;
+        }
     }
 
     function editCheckBox(elementCourant){
@@ -543,7 +576,7 @@ function edit(idCourant){
         let elementCourant = dictionnaireElements.get(idCourant);
         console.log("samarcheeeeeee");
         console.log(elementCourant);
-        elementCourant.addParameter("parametre","false");
+        elementCourant.addParameter("edjhfv cdzs","false");
         elementCourant.displayParameters();
         edit(idCourant);
 
