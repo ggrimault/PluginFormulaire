@@ -21,7 +21,7 @@ class objectFormulaire{
             this.parameter = new Map();
             this.parameter.set("label",new Array());
             this.parameter.set("checked",new Array());
-            this.parameter.get("label").push("parametre");
+            this.parameter.get("label").push("Un paramètre quelconque");
             this.parameter.get("checked").push(false);
             this.nbParameter = 1;
         }
@@ -576,19 +576,11 @@ function edit(idCourant){
         let elementCourant = dictionnaireElements.get(idCourant);
         console.log("samarcheeeeeee");
         console.log(elementCourant);
-        elementCourant.addParameter("edjhfv cdzs","false");
+        elementCourant.addParameter("Un nouveau paramètre","false");
         elementCourant.displayParameters();
         edit(idCourant);
 
 
-    }
-
-    function test(){
-        let currentElement = dictionnaireElements.get(0);
-        currentElement.parameter.get("label").push("Parametre 1");
-        currentElement.parameter.get("label").push("Parametre 2");
-        currentElement.nbParameter++;
-        currentElement.displayParameters();
     }
 
     function createBtnAddParameter(elementCourant){
@@ -598,4 +590,8 @@ function edit(idCourant){
         btn.setAttribute("onclick","addParameter("+elementCourant.id+")");
         document.getElementById("panneauConfig").appendChild(btn);
        
+    }
+
+    function test(){
+
     }
