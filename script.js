@@ -120,6 +120,9 @@ class objectFormulaire{
         refreshLabel(){
             console.log("On recherche : label_" + this.id);
             document.getElementById("label_" + this.id).innerHTML = this.label;
+            if(this.type == "select"){ //On affiche les options
+                this.displayOptions();
+            }
         }
 
         editLabel(chaine){
@@ -137,7 +140,12 @@ class objectFormulaire{
                 div.id = "div_" + this.id;
                 label.id = "label_" + this.id;
                 console.log("Attribution de l'id: " + label.id);
-                element.id = "element_" + this.id +".0";
+                if(this.type == "checkbox" || this.type == "radio"){
+                    element.id = "element_" + this.id +".0";
+                } else {
+                    element.id = "element_" + this.id;
+                }
+                
 
             //Attribution des NAME
                 div.name = this.type + "_" + this.id;
@@ -236,12 +244,27 @@ class objectFormulaire{
             }
         }
 
-        displayOptions(){
-            //Afficher toutes les options d'un select a partir des variables parameter et nbParameter
+        displayOptions(){//Afficher toutes les options d'un select a partir des variables parameter et nbParameter
+            this.deleteDisplayedOptions();
+            let select = document.getElementById("element_"+this.id);
+            console.log("Le select que l'on souhaite afficher");
+            console.log(select);
+            console.log("Les parametre attribués");
+            console.log(this.parameter);
+            for(let i = 0; i < this.nbParameter; i++){
+                let anOption = document.createElement("option");
+                anOption.setAttribute("value",this.parameter.get("label")[i]);
+                anOption.setAttribute("id","option_"+this.id+"."+i);
+                anOption.text = this.parameter.get("label")[i];
+                select.add(anOption);
+            }
         }
 
-        deleteDisplayedOptions(){
-            //Supprimer toutes les options affichés de l'élement
+        deleteDisplayedOptions(){//Supprimer toutes les options affichés de l'élement
+            let select = document.getElementById("element_"+this.id);
+            for(let i = 0; i <= select.length; i++){
+                select.remove(0);
+            }
         }
 
         addParameter(label, boolean){
@@ -413,7 +436,7 @@ function edit(idCourant){
                 break;
             case "select":
                 editSelect(elementCourant);
-
+                createBtnAddOption(elementCourant);
                 break;
             default:
                 //lalala
@@ -587,9 +610,9 @@ function edit(idCourant){
 
         //On affiche dans un input text le LABEL
             //Creation des options
-                let lesOptions = elementCourant.getElementsByTagNames("OPTION");
+                let lesOptions = document.getElementById("div_"+elementCourant.id).getElementsByTagName("OPTION");
                 console.log(lesOptions);
-                for (let i = 0; i <= lesOptions.length; i++){
+                for (let i = 0; i < lesOptions.length; i++){
                     //Creation de l'input contenant le nom de l'option
                         let champ = document.createElement("input");
                         champ.setAttribute("id","champ_"+lesOptions[i].id.split("_")[1]);
@@ -597,7 +620,8 @@ function edit(idCourant){
                         champ.value = elementCourant.parameter.get("label")[i];
 
                     //Creation du btn afin d'actualiser le nom du label
-                        let leId = lesInputs[i].getAttribute("id").split("_")[1];
+                        let leId = lesOptions[i].getAttribute("id").split("_")[1];
+                        console.log("Id obtenu : "+leId);
                         let idDebut = leId.split(".")[0];
                         let idSuite = leId.split(".")[1];
                     
@@ -654,7 +678,7 @@ function edit(idCourant){
         let elementCourant = dictionnaireElements.get(idCourant);
         console.log("samarcheeeeeee");
         console.log(elementCourant);
-        elementCourant.addParameter("Un nouveau paramètre","false");
+        elementCourant.addParameter("Une nouvelle option","false");
         elementCourant.displayOptions();
         edit(idCourant);
     }
@@ -666,5 +690,3 @@ function edit(idCourant){
         btn.setAttribute("onclick","addOption("+elementCourant.id+")");
         document.getElementById("panneauConfig").appendChild(btn);
     }
-
-    function displayOptions(){}
