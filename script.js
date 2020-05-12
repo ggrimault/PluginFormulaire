@@ -164,7 +164,7 @@ class objectFormulaire{
                 } else {
                     element.id = "element_" + this.id;
                 }
-                
+
 
             //Attribution des NAME
                 div.name = this.type + "_" + this.id;
@@ -223,7 +223,7 @@ class objectFormulaire{
             for(let i = listLabel.length-1; i>=0; i--){
                 currentDiv.removeChild(listLabel[i]);
             }
-            
+
         }
 
 
@@ -474,6 +474,18 @@ function edit(idCourant){
         panneauConfig.appendChild(document.createElement("br"));
         panneauConfig.appendChild(document.createElement("br"));
 
+    //On crée un bouton qui permet de supprimer l'élément
+        let boutonSuppr;
+        boutonSuppr = document.createElement("button");
+        boutonSuppr.id = "btnSuppr" + idCourant;
+        panneauConfig.appendChild(boutonSuppr);
+        boutonSuppr.setAttribute("onclick","supprimerElement("+idCourant+")");
+        boutonSuppr.innerHTML = "Supprimer l'élément";
+
+    //On ajoute un saut de ligne
+        panneauConfig.appendChild(document.createElement("br"));
+        panneauConfig.appendChild(document.createElement("br"));
+
     //On crée une checkbox permettant de faire du champ un champ requis ou non
         createCheckBoxRequired(idCourant);
 
@@ -511,6 +523,13 @@ function edit(idCourant){
                 //lalala
                 break;
         }
+}
+
+function supprimerElement(anId){
+  dictionnaireElements.delete(anId);
+  removeElements();
+  showElements();
+  removeEdit();
 }
 
 function getInputValueAndEditLabel(anId){
@@ -587,7 +606,7 @@ function editParametersLabel(elementCourant){
     }
     let label = document.createElement("p");
     label.innerHTML = "Edition des paramètres";
-    
+
     let divParameter = document.getElementById("divParameter");
     divParameter.appendChild(document.createElement("br"));
     divParameter.appendChild(document.createElement("br"));
@@ -606,7 +625,7 @@ function editParametersLabel(elementCourant){
                 let leId = lesInputs[i].getAttribute("id").split("_")[1];
                 let idDebut = leId.split(".")[0];
                 let idSuite = leId.split(".")[1];
-                
+
                 let btnEditLabel = document.createElement("button");
                 btnEditLabel.setAttribute("id","editLabelBtn");
                 btnEditLabel.innerHTML = "Appliquer Label";
@@ -618,7 +637,7 @@ function editParametersLabel(elementCourant){
                 btnCheck_Uncheck.innerHTML = "coché/decoche";
                 btnCheck_Uncheck.setAttribute("onclick","displayCheckParameter("+idDebut+","+idSuite+")");
                 divParameter.appendChild(btnCheck_Uncheck);
-                
+
                 divParameter.appendChild(document.createElement("br"));
             }
 }
@@ -647,7 +666,7 @@ function displayEditionParameter(idDebut, idFin, i){
     let elementCourant = dictionnaireElements.get(idDebut);
 
     let newValue = document.getElementById("champ_"+anId).value;
-    
+
     if (elementCourant.upperType == "select"){
         document.getElementById("option_"+anId).value = newValue;
         document.getElementById("option_"+anId).text = newValue;
@@ -693,7 +712,7 @@ function displayCheckParameter(idDebut, idFin){
     let anId = idDebut +"."+idFin;
 
     let anElement = document.getElementById("element_"+anId);
-    
+
     if(anElement.checked == true){
         anElement.checked = false;
     } else if (anElement.checked == false){
@@ -747,7 +766,7 @@ function editSelect(elementCourant){
     }
     let label = document.createElement("p");
     label.innerHTML = "Edition des paramètres";
-    
+
     let divParameter = document.getElementById("divParameter");
     divParameter.appendChild(document.createElement("br"));
     divParameter.appendChild(document.createElement("br"));
@@ -768,7 +787,7 @@ function editSelect(elementCourant){
                     let leId = lesOptions[i].getAttribute("id").split("_")[1];
                     let idDebut = leId.split(".")[0];
                     let idSuite = leId.split(".")[1];
-                
+
                     let btnEditLabel = document.createElement("button");
                     btnEditLabel.setAttribute("id","editLabelBtn");
                     btnEditLabel.innerHTML = "Appliquer Label";
