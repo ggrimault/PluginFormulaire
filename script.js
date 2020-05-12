@@ -638,6 +638,12 @@ function editParametersLabel(elementCourant){
                 btnCheck_Uncheck.setAttribute("onclick","displayCheckParameter("+idDebut+","+idSuite+")");
                 divParameter.appendChild(btnCheck_Uncheck);
 
+                let btnSuppr = document.createElement("button");
+                btnSuppr.setAttribute("id","btnSuppr");
+                btnSuppr.innerHTML = "Supprimer le champ";
+                btnSuppr.setAttribute("onclick","deleteParameter("+idDebut+","+idSuite+")");
+                divParameter.appendChild(btnSuppr);
+
                 divParameter.appendChild(document.createElement("br"));
             }
 }
@@ -655,6 +661,16 @@ function addParameter(idCourant){
         elementCourant.displayParameters();
     }
     edit(idCourant);
+}
+
+function deleteParameter(idDebut,idSuite){
+    let elementCourant = dictionnaireElements.get(idDebut);
+    elementCourant.parameter.get("label").splice(idSuite,1);
+    elementCourant.parameter.get("checked").splice(idSuite,1);
+    elementCourant.nbParameter--;
+    removeElements();
+    showElements();
+    edit(idDebut);
 }
 
 function displayEditionParameter(idDebut, idFin, i){
