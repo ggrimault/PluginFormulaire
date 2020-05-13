@@ -372,12 +372,9 @@ function drop(event, id)
 
     var newElement = new objectFormulaire(typeIdTarget);
 
-    //classer dans le tableau et donner le num d'index en id au div du nouvel element
-
     if (isDropped == 0) { //Si on drag dans un div qui est lui meme sur le dropper, ca l'ajoutera 2 fois, isDropped sert à ca
         if(id == "dropper") //si c'est juste sur le dropper, on le met à la fin de la ligne
         {
-            //div.id = tabElements.length + 1;
             dictionnaireElements.set(newElement.id, newElement);
             isDropped = 1;
         }
@@ -395,9 +392,6 @@ function drop(event, id)
             isDropped = 1;*/
         }
     }
-    //newElement.onclick = edit(newElement);
-
-    //tout afficher
 
     removeElements();
 
@@ -418,16 +412,20 @@ function showElements()
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction showElements");
     }
+
+    let iteration = 0;
+
     dictionnaireElements.forEach(function(element){
-        /*
-        //Ajouter un petit espace entre chaque elements, celui ci doit répondre à un drop dessus
-        var espace = document.createElement("div");
-        espace.setAttribute("ondragover","allowDrop(event)");
-        espace.setAttribute("ondrop","drop(event, this.id)");
-        espace.setAttribute("class","space");
-        espace.id = element.id-1;
-        document.getElementById("dropper").appendChild(espace);
-        */
+        //Creation d'une div servant uniquement pour l'espacement et l'insertion
+            var espace = document.createElement("div");
+            espace.setAttribute("ondragover","allowDrop(event)");
+            espace.setAttribute("ondrop","drop(event, this.id)");
+            espace.setAttribute("class","space");
+            espace.id = iteration;
+            document.getElementById("dropper").appendChild(espace);
+
+            iteration++;
+
         element.createElementInside("dropper");
     });
 }
@@ -810,7 +808,27 @@ function editSelect(elementCourant){
                     btnEditLabel.setAttribute("onclick","displayEditionParameter("+idDebut+","+idSuite+","+i+")");
                     divParameter.appendChild(btnEditLabel);
 
+                    let btnSuppr = document.createElement("button");
+                    btnSuppr.setAttribute("id","btnSuppr");
+                    btnSuppr.innerHTML = "Supprimer le champ";
+                    btnSuppr.setAttribute("onclick","deleteParameter("+idDebut+","+idSuite+")");
+                    divParameter.appendChild(btnSuppr);
+
                 //Saut de ligne
                     divParameter.appendChild(document.createElement("br"));
             }
+}
+
+/*
+----------------------------------------------------------------------------------------------
+----------------- Fonctions concerning exclusively SAVING FORM --------------------------
+----------------------------------------------------------------------------------------------
+*/
+
+function saveForm(){
+    dictionnaireElements.forEach(function(element){
+        let donnees = JSON.stringify(element);
+    
+        //Suite du traitement à faire ici (La on obtient un obj parse en str)
+    });
 }
