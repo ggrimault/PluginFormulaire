@@ -349,6 +349,7 @@ class objectFormulaire{
 let afficherTraces = true;
 
 let dictionnaireElements = new Map;
+let ordreElement = new Array;
 var nbElements = 0;
 var isDropped = 1; //Permet de savoir si l'element est "en l'air", c'est utilisé pour ne pas créer 2 element quand on le drop sur un element existant
 
@@ -376,6 +377,7 @@ function drop(event, id)
         if(id == "dropper") //si c'est juste sur le dropper, on le met à la fin de la ligne
         {
             dictionnaireElements.set(newElement.id, newElement);
+            ordreElement.push(newElement.id);
             isDropped = 1;
         }
         else //si c'est drop sur un element
@@ -414,20 +416,20 @@ function showElements()
     }
 
     let iteration = 0;
+    for (let i = 0; i < ordreElement.length; i++) {
+      let elementCourant = dictionnaireElements.get(ordreElement[i]);
+      var espace = document.createElement("div");
+      espace.setAttribute("ondragover","allowDrop(event)");
+      espace.setAttribute("ondrop","drop(event, this.id)");
+      espace.setAttribute("class","space");
+      espace.id = iteration;
+      document.getElementById("dropper").appendChild(espace);
 
-    dictionnaireElements.forEach(function(element){
-        //Creation d'une div servant uniquement pour l'espacement et l'insertion
-            var espace = document.createElement("div");
-            espace.setAttribute("ondragover","allowDrop(event)");
-            espace.setAttribute("ondrop","drop(event, this.id)");
-            espace.setAttribute("class","space");
-            espace.id = iteration;
-            document.getElementById("dropper").appendChild(espace);
+      iteration++;
+      elementCourant.createElementInside("dropper");
 
-            iteration++;
+    }
 
-        element.createElementInside("dropper");
-    });
 }
 
 function removeElements(){
@@ -467,6 +469,30 @@ function edit(idCourant){
         panneauConfig.appendChild(bouton);
         bouton.setAttribute("onclick", "getInputValueAndEditLabel("+idCourant+")");
         bouton.innerHTML = "Mettre a jour le label";
+
+    //On ajoute un saut de ligne
+        panneauConfig.appendChild(document.createElement("br"));
+        panneauConfig.appendChild(document.createElement("br"));
+
+    //Bouton pour monter l'élément dans l'ordre des éléments
+        let boutonUp;
+        boutonUp = document.createElement("button");
+        boutonUp.id = "btnUp_" + idCourant;
+        panneauConfig.appendChild(boutonUp);
+        boutonUp.setAttribute("onclick", "putElementUp("+idCourant+")");
+        boutonUp.innerHTML = "Monter l'élément";
+
+    //On ajoute un saut de ligne
+        panneauConfig.appendChild(document.createElement("br"));
+        panneauConfig.appendChild(document.createElement("br"));
+
+    //Bouton pour monter l'élément dans l'ordre des éléments
+        let boutonDown;
+        boutonDown = document.createElement("button");
+        boutonDown.id = "btnDown_" + idCourant;
+        panneauConfig.appendChild(boutonDown);
+        boutonDown.setAttribute("onclick", "putElementDown("+idCourant+")");
+        boutonDown.innerHTML = "Baisser l'élément";
 
     //On ajoute un saut de ligne
         panneauConfig.appendChild(document.createElement("br"));
@@ -521,6 +547,27 @@ function edit(idCourant){
                 //lalala
                 break;
         }
+}
+
+function putElementUp(anId){
+  let index = ordreElement.indexOf(anId);
+  if(index > 0){
+    let temp = ordreElement[index - 1];
+    ordreElement[index-1] = ordreElement[index];
+    ordreElement[index] = temp;
+    removeElements();
+    showElements();
+  }
+}
+function putElementDown(anId){
+  let index = ordreElement.indexOf(anId);
+  if(index < ordreElement.length-1){
+    let temp = ordreElement[index + 1];
+    ordreElement[index+1] = ordreElement[index];
+    ordreElement[index] = temp;
+    removeElements();
+    showElements();
+  }
 }
 
 function supprimerElement(anId){
@@ -828,7 +875,7 @@ function editSelect(elementCourant){
 function saveForm(){
     dictionnaireElements.forEach(function(element){
         let donnees = JSON.stringify(element);
-    
+
         //Suite du traitement à faire ici (La on obtient un obj parse en str)
     });
 }
