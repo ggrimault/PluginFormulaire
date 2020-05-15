@@ -240,6 +240,9 @@ class objectFormulaire{
                 element.setAttribute("type",this.type);
                 element.setAttribute("id", "element_" + this.id + "." + i);
                 element.setAttribute("name", this.type + "_" + this.id);
+                if(this.parameter.get("checked")[i]==true){
+                  element.checked = true;
+                }
 
                 label.setAttribute("for",element.getAttribute("name"));
                 label.setAttribute("name", "label_" + this.id);
@@ -774,10 +777,14 @@ function displayCheckParameter(idDebut, idFin){
 
     let anElement = document.getElementById("element_"+anId);
 
+    let elementCourant = dictionnaireElements.get(idDebut);
+
     if(anElement.checked == true){
         anElement.checked = false;
+        elementCourant.parameter.get("checked")[idFin] = false;
     } else if (anElement.checked == false){
         anElement.checked = true;
+        elementCourant.parameter.get("checked")[idFin] = true;
     }
 }
 
