@@ -377,12 +377,24 @@ function drop(event, id)
     var newElement = new objectFormulaire(typeIdTarget);
 
     if (isDropped == 0) { //Si on drag dans un div qui est lui meme sur le dropper, ca l'ajoutera 2 fois, isDropped sert à ca
-        if(id == "dropper") { //si c'est juste sur le dropper, on le met à la fin de la ligne
+        if(id == "dropper") //si c'est juste sur le dropper, on le met à la fin de la ligne
+        {
             dictionnaireElements.set(newElement.id, newElement);
             ordreElement.push(newElement.id);
             isDropped = 1;
         }
-        else{ //si c'est drop sur un element
+        else //si c'est drop sur un element
+        {
+            /*var indexDrop = parseInt(id);
+
+            div.id = indexDrop + 1;
+            for(i = indexDrop; i < tabElements.length; i++) //incremmenter les id de tous les suivants
+            {
+                tabElements[i].id++;
+            }
+
+            tabElements.splice(indexDrop,0,div); //on le met à l'index indexDrop
+            isDropped = 1;*/
         }
     }
 
