@@ -575,6 +575,9 @@ function putElementDown(anId){
 
 function supprimerElement(anId){
   dictionnaireElements.delete(anId);
+  console.log(ordreElement);
+  ordreElement.splice(ordreElement.indexOf(anId),1);
+  console.log(ordreElement);
   removeElements();
   showElements();
   removeEdit();
