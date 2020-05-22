@@ -25,6 +25,10 @@ class objectFormulaire{
             this.parameter = new Map();
             this.parameter.set("label",new Array());
             this.parameter.set("checked",new Array());
+            if(this.type == "checkbox" || this.type == "radio"){
+                this.parameter.set("price",new Array());
+                this.parameter.get("price").push(0);
+            }
             this.parameter.get("label").push("Un paramètre quelconque...");
             this.parameter.get("checked").push(false);
             this.nbParameter = 1;
@@ -315,6 +319,9 @@ class objectFormulaire{
 
             this.parameter.get("label").push(label);
             this.parameter.get("checked").push(boolean);
+            if(this.type == "checkbox" || this.type == "radio"){
+                this.parameter.get("price").push(0);
+            }
             this.nbParameter++;
         }
 
@@ -696,6 +703,22 @@ function editParametersLabel(elementCourant){
                 divParameter.appendChild(btnSuppr);
 
                 divParameter.appendChild(document.createElement("br"));
+
+                let labelPrix = document.createTextNode("Prix si ce paramètre est coché :");
+                divParameter.appendChild(labelPrix);
+
+                let champPrix = document.createElement("input");
+                champPrix.setAttribute("id","champPrix_"+lesInputs[i].id.split("_")[1]);
+                divParameter.appendChild(champPrix);
+                champPrix.value = elementCourant.parameter.get("price")[i];
+
+                let btnPrix = document.createElement("button");
+                btnPrix.setAttribute("id","btnPrix");
+                btnPrix.innerHTML = "Valider le prix";
+                btnPrix.setAttribute("onclick","changerPrix("+idDebut+","+idSuite+","+i+")");
+                divParameter.appendChild(btnPrix);
+
+                divParameter.appendChild(document.createElement("br"));
             }
 }
 
@@ -719,6 +742,22 @@ function deleteParameter(idDebut,idSuite){
     elementCourant.parameter.get("label").splice(idSuite,1);
     elementCourant.parameter.get("checked").splice(idSuite,1);
     elementCourant.nbParameter--;
+    removeElements();
+    showElements();
+    edit(idDebut);
+}
+
+function changerPrix(idDebut,idSuite,index){
+    let elementCourant = dictionnaireElements.get(idDebut);
+    let anId = idDebut+"."+idSuite;
+
+    let prix = document.getElementById("champPrix_"+anId).value;
+    if (isNaN(prix)){
+      alert("Veuillez insérer un prix valide");
+      document.getElementById("champPrix_"+anId).innerHTML = "";
+    }else{
+      elementCourant.parameter.get("price")[index] = prix;
+    }
     removeElements();
     showElements();
     edit(idDebut);
@@ -748,14 +787,20 @@ function test(){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction test");
     }
-    for(let i = 0; i<= 5; i++){
-        let anOption = document.createElement("option");
-        anOption.setAttribute("value","something"+i);
-        anOption.setAttribute("id","0."+i);
-        anOption.text = "something"+i;
-        document.getElementsByTagName("select")[0].add(anOption);
+    let prix = 0;
+    for(let i = 0; i<ordreElement.length; i++){
+      let elementCourant = dictionnaireElements.get(ordreElement[i]);
+      if(elementCourant.type == "radio" || elementCourant.type =="checkbox"){
+        for(let j = 0;j<elementCourant.nbParameter;j++){
+          if(elementCourant.parameter.get("checked")[j]==true){
+            prix += parseFloat(elementCourant.parameter.get("price")[j])
+          }
+        }
+      }
     }
-}
+    alert(prix);
+    }
+
 /*
 ----------------------------------------------------------------------------------------------
 ----------------- Fonctions concerning exclusively CHECKBOX & RADIO --------------------------
