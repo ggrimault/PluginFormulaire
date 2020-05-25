@@ -390,19 +390,6 @@ function drop(event, id)
             ordreElement.push(newElement.id);
             isDropped = 1;
         }
-        else //si c'est drop sur un element
-        {
-            /*var indexDrop = parseInt(id);
-
-            div.id = indexDrop + 1;
-            for(i = indexDrop; i < tabElements.length; i++) //incremmenter les id de tous les suivants
-            {
-                tabElements[i].id++;
-            }
-
-            tabElements.splice(indexDrop,0,div); //on le met à l'index indexDrop
-            isDropped = 1;*/
-        }
     }
 
     removeElements();
@@ -928,9 +915,42 @@ function editSelect(elementCourant){
 */
 
 function saveForm(){
-    dictionnaireElements.forEach(function(element){
-        let donnees = JSON.stringify(element);
 
+    let donnees = "";
+    dictionnaireElements.forEach(function(element){
+        //Stocker les valeur contenu dans la map
+            let donneeLabel = element.parameter.get("label");
+            let donneeCheck = element.parameter.get("checked");
+            let saveParameter = element.parameter;
+            if(afficherTraces == true){
+                console.log(donneeLabel);
+                console.log(donneeCheck);
+                console.log(saveParameter);
+            }
+
+        //changer la map par deux tableau
+            element.parameter = new Array();
+            element.parameter[0] = donneeLabel;
+            element.parameter[1] = donneeCheck;
+
+
+        //faire la sauvegarde
+            donnees += JSON.stringify(element);
+
+        //remettre la map en place
+            element.parameter = saveParameter;
+            if(afficherTraces == true){
+                console.log(element);
+            }
+       
         //Suite du traitement à faire ici (La on obtient un obj parse en str)
     });
+
+    
+
+
+
+    if(afficherTraces == true){
+        console.log(donnees);
+    }
 }
