@@ -6,6 +6,8 @@ Author: Guillaume GRIMAULT, Esteban GUTIERREZ
 Version: 1.0
 */
 
+//definition des shortcodes
+
 function fenetre_admin() {
 		add_menu_page(
 			'Plugin creation forumlaire',
@@ -38,23 +40,46 @@ function fenetre_admin() {
 
 	add_action( 'admin_menu', 'fenetre_admin' );
 
-
 	function my_admin_page_contents() {
 		?>
 			<h1>
 				Page d'aministration du plugin de création de formulaire
+				
 			</h1>
 		<?php
 	}
   function my_admin_listeFormulaire_contents() {
+		//include("shortCodes.html");
+		
 		?>
-			<h1>
-				Liste des formulaires créés
-			</h1>
+		<h1> Les shortcode: </h1></br>
+		<h3>
+		[formulaire]: Pas de formulaire saisi </br>
+		[bienvenue id=unNombre]: formulaire n°unNombre
 		<?php
 	}
 
   function my_admin_createFrom_contents() {
 		include("pluginFormulaire.html");
 	}
- ?>
+
+	//Creation des shortcodes
+	function shortcode_formulaire($atts){
+		extract(shortcode_atts(
+			array(
+				'id' => 0
+		), $atts));
+	
+		if($id== 0){
+			$text = "Pas de formulaire saisi";
+		}
+		else{
+			$text = "formulaire n°" . $id;
+			//construction du formulaire
+		}
+		return '<h2>' . $text . '</h2>';
+	}
+	add_shortcode('formulaire', 'shortcode_formulaire');
+
+
+	?>
