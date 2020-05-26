@@ -40,7 +40,7 @@ function fenetre_admin() {
 
 	add_action( 'admin_menu', 'fenetre_admin' );
 
-	function my_admin_page_contents() {
+	function my_admin_page_contents() {//affichage de la page de menu principale
 		?>
 			<h1>
 				Page d'aministration du plugin de création de formulaire
