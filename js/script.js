@@ -482,6 +482,7 @@ function removeEdit(){
 function edit(idCourant){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction edit");
+        console.log("Voici l'id courant: "+idCourant);
     }
     //On efface tout dans la colonne d'edition
         removeEdit();
@@ -570,16 +571,18 @@ function edit(idCourant){
             case "radio":
                 editRadio(elementCourant);
                 createBtnAddParameter(elementCourant);
-
+                editDependance(elementCourant);
                 break;
             case "select":
                 editSelect(elementCourant);
                 createBtnAddOption(elementCourant);
+                editDependance(elementCourant);
                 break;
             default:
                 //lalala
                 break;
         }
+        
 }
 
 function putElementUp(anId){
@@ -810,6 +813,7 @@ function test(){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction test");
     }
+
     dictionnaireElements.get(0).addDependance("OUISAMARCHE","anEvent");
     dictionnaireElements.get(0).addDependance("encore1","anEvent");
     dictionnaireElements.get(0).addDependance("sapar","anEvent");
@@ -939,6 +943,98 @@ function editSelect(elementCourant){
             }
 }
 
+/*
+----------------------------------------------------------------------------------------------
+----------------- Fonctions concerning DEPENDANCES -------------------------------------------
+----------------------------------------------------------------------------------------------
+*/
+function editDependance(elementCourant){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction editDependance");
+    }
+
+    //Affichage
+        let divDependance = document.createElement("DIV");
+        divDependance.setAttribute("id","divDependance");
+        let label = document.createElement("label");
+        label.innerHTML = "Dépendances";
+
+        divDependance.appendChild(document.createElement("br"));
+        divDependance.appendChild(document.createElement("br"));
+        divDependance.appendChild(label);
+        document.getElementById("panneauConfig").appendChild(divDependance);
+        divDependance.appendChild(document.createElement("br"));
+        divDependance.appendChild(document.createElement("br"));
+
+    //Creation de l'espace d'edition des dependance
+        //Creation des options
+        let selectElement = document.createElement("select");
+        selectElement.setAttribute("id","selectElement");
+        dictionnaireElements.forEach(function(element){
+            
+            if(element == elementCourant || element.type == "text"  || element.type == "textArea" || element.type == "checkbox"){}//Ne rien faire
+            else {
+                //Creation d'une liste déroulante contenant le nom des éléments présents
+                    let option = document.createElement("option");
+                    option.text = element.label;
+                    selectElement.add(option);
+            }
+
+        }) 
+        bouton = document.createElement("button");
+        bouton.id = "btn_" + elementCourant.id;
+        divDependance.appendChild(bouton);
+
+    
+
+        bouton.setAttribute("onclick", "getParameterOfElement()");
+        bouton.innerHTML = "=>";
+
+        //Attribution et saut de ligne
+        divDependance.appendChild(selectElement);
+}
+
+function getParameterOfElement(){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction getParameterOfElement");
+    }
+    
+    let oldSelectParameterOfElement = document.getElementById("selectElementParameter");
+    if(oldSelectParameterOfElement == null){}//Rien
+    else{
+        document.getElementById("divDependance").removeChild(oldSelectParameterOfElement);
+    }
+
+
+    let selectElement = document.getElementById("selectElement");
+    let choosenText = document.getElementById("selectElement").value;
+
+    let selectElementParameter = document.createElement("select");
+    selectElementParameter.setAttribute("id","selectElementParameter");
+
+    let iteration = 0;
+    let trouve = 0;
+    dictionnaireElements.forEach(function(element){
+        console.log("element.label = "+element.label);
+        console.log("choosenText = "+choosenText);
+        if(element.label.localeCompare(choosenText) == 0){
+            trouve = element.id;
+            alert("trouvé! "+trouve);
+        }
+        iteration++;
+
+    })
+    
+    elementCourant = dictionnaireElements.get(trouve);
+    
+    for(let i = 0; i < elementCourant.parameter.get("label").length; i++){
+        let option = document.createElement("option");
+        option.text = elementCourant.parameter.get("label")[i];;
+        selectElementParameter.add(option);
+    }
+    document.getElementById("divDependance").appendChild(selectElementParameter);
+        
+}
 /*
 ----------------------------------------------------------------------------------------------
 ----------------- Fonctions concerning exclusively SAVING FORM --------------------------
