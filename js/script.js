@@ -10,6 +10,8 @@ class objectFormulaire{
         _label;
         parameter;
         _nbParameter;
+        dependance;
+        _nbDependance;
 
     //Constructeur
         constructor(type){
@@ -21,7 +23,8 @@ class objectFormulaire{
             this.upperType = type;
             this.type = type;
             this.name = this.type + "_" + this.id;
-            this.label = "Element ID global " + this.id ;
+            this.label = "Element ID global " + this.id;
+
             this.parameter = new Map();
             this.parameter.set("label",new Array());
             this.parameter.set("checked",new Array());
@@ -32,6 +35,11 @@ class objectFormulaire{
             this.parameter.get("label").push("Un paramètre quelconque...");
             this.parameter.get("checked").push(false);
             this.nbParameter = 1;
+
+            this.dependance = new Map();
+            this.dependance.set("idLinked", new Array());
+            this.dependance.set("eventLinked", new Array());
+            this.nbDependance = 0;
         }
 
     //SET
@@ -74,6 +82,10 @@ class objectFormulaire{
             this._nbParameter = nb;
         }
 
+        set _nbDependance(nb){
+            this._nbDependance = nb;
+        }
+
     //GET
         get id(){
             return this._idGlobal;
@@ -105,6 +117,10 @@ class objectFormulaire{
 
         get nbParameter(){
             return this._nbParameter;
+        }
+
+        get _nbDependance(){
+            return this._nbDependance;
         }
 
     //AUTRE
@@ -311,7 +327,7 @@ class objectFormulaire{
                 select.remove(0);
             }
         }
-
+        //CONCERNANT L'ATTRIBUT PARAMETRE
         addParameter(label, boolean){
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction addParameter CLASS");
@@ -346,6 +362,26 @@ class objectFormulaire{
                 console.log("Vous êtes dans la fonction editParameterChecked");
             }
             this.parameter.get("checked")[finId] = boolean;
+        }
+
+        //CONCERNANT DEPENDANCE
+        addDependance(IdLinked, eventLinked){
+            if(afficherTraces == true){
+                console.log("Vous êtes dans la fonction addDependance");
+                console.log(this);
+            }
+            this.dependance.get("idLinked").push(IdLinked);
+            this.dependance.get("eventLinked").push(eventLinked);
+            this.nbDependance++;
+        }
+
+        deleteDependance(IdLinked){
+            if(afficherTraces == true){
+                console.log("Vous êtes dans la fonction deleteDependance");
+            }
+            let numeroTab = this.dependance.get("idLinked").indexOf(IdLinked);
+            this.dependance.get("idLinked").splice(numeroTab,1);
+            this.dependance.get("eventLinked").splice(numeroTab,1);
         }
     }
     //variable statique. La déclaration se fait en dessous de la classe.
@@ -774,19 +810,14 @@ function test(){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction test");
     }
-    let prix = 0;
-    for(let i = 0; i<ordreElement.length; i++){
-      let elementCourant = dictionnaireElements.get(ordreElement[i]);
-      if(elementCourant.type == "radio" || elementCourant.type =="checkbox"){
-        for(let j = 0;j<elementCourant.nbParameter;j++){
-          if(elementCourant.parameter.get("checked")[j]==true){
-            prix += parseFloat(elementCourant.parameter.get("price")[j])
-          }
-        }
-      }
+    dictionnaireElements.get(0).addDependance("OUISAMARCHE","anEvent");
+    dictionnaireElements.get(0).addDependance("encore1","anEvent");
+    dictionnaireElements.get(0).addDependance("sapar","anEvent");
+    dictionnaireElements.get(0).deleteDependance("encore1");
+    if(afficherTraces == true){
+        console.log(dictionnaireElements.get(0));
     }
-    alert(prix);
-    }
+}
 
 /*
 ----------------------------------------------------------------------------------------------
@@ -945,9 +976,6 @@ function saveForm(){
        
         //Suite du traitement à faire ici (La on obtient un obj parse en str)
     });
-
-    
-
 
 
     if(afficherTraces == true){
