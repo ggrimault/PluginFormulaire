@@ -980,21 +980,19 @@ function editDependance(elementCourant){
                     selectElement.add(option);
             }
 
-        }) 
+        })
+
         bouton = document.createElement("button");
         bouton.id = "btn_" + elementCourant.id;
-        divDependance.appendChild(bouton);
-
-    
-
-        bouton.setAttribute("onclick", "getParameterOfElement()");
+        bouton.setAttribute("onclick", "getParameterOfElement("+elementCourant.id+")");
         bouton.innerHTML = "=>";
 
         //Attribution et saut de ligne
         divDependance.appendChild(selectElement);
+        divDependance.appendChild(bouton);
 }
 
-function getParameterOfElement(){
+function getParameterOfElement(IdCourant){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction getParameterOfElement");
     }
@@ -1004,9 +1002,25 @@ function getParameterOfElement(){
     else{
         document.getElementById("divDependance").removeChild(oldSelectParameterOfElement);
     }
+    let oldBtn = document.getElementById("btn_validerDep");
+    if(oldBtn == null){}//Rien
+    else{
+        document.getElementById("divDependance").removeChild(oldBtn);
+    }
 
+    let oldBtnValidate = document.getElementById("btn_confirmerEvent");
+    if(oldBtnValidate == null){}//Rien
+    else{
+        document.getElementById("divDependance").removeChild(oldBtnValidate);
+    }
 
-    let selectElement = document.getElementById("selectElement");
+    let oldSelectEvent = document.getElementById("selectEvent");
+    if(oldSelectEvent == null){}//Rien
+    else{
+        document.getElementById("divDependance").removeChild(oldSelectEvent);
+    }
+    
+
     let choosenText = document.getElementById("selectElement").value;
 
     let selectElementParameter = document.createElement("select");
@@ -1019,7 +1033,6 @@ function getParameterOfElement(){
         console.log("choosenText = "+choosenText);
         if(element.label.localeCompare(choosenText) == 0){
             trouve = element.id;
-            alert("trouvé! "+trouve);
         }
         iteration++;
 
@@ -1029,11 +1042,80 @@ function getParameterOfElement(){
     
     for(let i = 0; i < elementCourant.parameter.get("label").length; i++){
         let option = document.createElement("option");
-        option.text = elementCourant.parameter.get("label")[i];;
+        option.text = elementCourant.parameter.get("label")[i];
         selectElementParameter.add(option);
     }
+
     document.getElementById("divDependance").appendChild(selectElementParameter);
-        
+    
+    let bouton = document.createElement("button");
+    bouton.id = "btn_validerDep" ;
+    bouton.setAttribute("onclick", "selectionnerEvent("+IdCourant+","+elementCourant.id+")");
+    bouton.innerHTML = "Valider";
+    document.getElementById("divDependance").appendChild(bouton);
+}
+
+function selectionnerEvent(idCourant, selectedElementId){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction selctionnerEvent");
+    }
+    let selectEvent = document.createElement("select");
+    selectEvent.setAttribute("id","selectEvent");
+
+    let option_activate = document.createElement("option");
+    option_activate.text = "activate";
+    selectEvent.add(option_activate);
+
+    let option_disactivate = document.createElement("option");
+    option_disactivate.text = "desactivate";
+    selectEvent.add(option_disactivate);
+
+    let bouton = document.createElement("button");
+    bouton.id = "btn_confirmerEvent" ;
+    bouton.setAttribute("onclick", "addDependance("+idCourant+","+selectedElementId+")");
+    bouton.innerHTML = "Valider";
+
+    document.getElementById("divDependance").appendChild(selectEvent);
+    document.getElementById("divDependance").appendChild(bouton);
+}
+
+function addDependance(idCourant, selectedElementId){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction addDependance");
+    }
+
+    let elementCourant = dictionnaireElements.get(idCourant);
+    document.getElementById("selectElementParameter")
+
+
+    let choosenParameter = document.getElementById("selectElementParameter").value;
+    let choosenEvent = document.getElementById("selectEvent").value;
+
+    let parameterId=0;
+    let parameters = document.getElementById("element_"+selectedElementId).childNodes;
+    if(afficherTraces == true){
+        console.log(parameters);
+        console.log(document.getElementById("element_"+selectedElementId));
+        console.log(document.getElementById("element_"+selectedElementId).childNodes);
+    }
+    parameters.forEach(function(parameter){
+        if(parameter.innerHTML.localeCompare(choosenParameter) == 0){
+            parameterId = parameter.id;
+        }
+        if(afficherTraces == true){
+            console.log("comparaison de | "+parameter.innerHTML+" | et | "+choosenParameter+" |");
+        }
+    })
+
+    if(afficherTraces == true){
+        console.log("On envoie dans addDependance:");
+        console.log(parameterId);
+        console.log(choosenEvent);
+    }
+
+    elementCourant.addDependance(parameterId, choosenEvent);
+    console.log(elementCourant);
+    edit(idCourant);
 }
 /*
 ----------------------------------------------------------------------------------------------
