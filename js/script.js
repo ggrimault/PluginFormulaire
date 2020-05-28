@@ -978,6 +978,7 @@ function editDependance(elementCourant){
                     let option = document.createElement("option");
                     option.text = element.label;
                     selectElement.add(option);
+
             }
 
         })
@@ -996,29 +997,29 @@ function getParameterOfElement(IdCourant){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction getParameterOfElement");
     }
-    
-    let oldSelectParameterOfElement = document.getElementById("selectElementParameter");
-    if(oldSelectParameterOfElement == null){}//Rien
-    else{
-        document.getElementById("divDependance").removeChild(oldSelectParameterOfElement);
-    }
-    let oldBtn = document.getElementById("btn_validerDep");
-    if(oldBtn == null){}//Rien
-    else{
-        document.getElementById("divDependance").removeChild(oldBtn);
-    }
+    //Suppression des éléments
+        let oldSelectParameterOfElement = document.getElementById("selectElementParameter");
+        if(oldSelectParameterOfElement == null){}//Rien
+        else{
+            document.getElementById("divDependance").removeChild(oldSelectParameterOfElement);
+        }
+        let oldBtn = document.getElementById("btn_validerDep");
+        if(oldBtn == null){}//Rien
+        else{
+            document.getElementById("divDependance").removeChild(oldBtn);
+        }
 
-    let oldBtnValidate = document.getElementById("btn_confirmerEvent");
-    if(oldBtnValidate == null){}//Rien
-    else{
-        document.getElementById("divDependance").removeChild(oldBtnValidate);
-    }
+        let oldBtnValidate = document.getElementById("btn_confirmerEvent");
+        if(oldBtnValidate == null){}//Rien
+        else{
+            document.getElementById("divDependance").removeChild(oldBtnValidate);
+        }
 
-    let oldSelectEvent = document.getElementById("selectEvent");
-    if(oldSelectEvent == null){}//Rien
-    else{
-        document.getElementById("divDependance").removeChild(oldSelectEvent);
-    }
+        let oldSelectEvent = document.getElementById("selectEvent");
+        if(oldSelectEvent == null){}//Rien
+        else{
+            document.getElementById("divDependance").removeChild(oldSelectEvent);
+        }
     
 
     let choosenText = document.getElementById("selectElement").value;
@@ -1035,7 +1036,6 @@ function getParameterOfElement(IdCourant){
             trouve = element.id;
         }
         iteration++;
-
     })
     
     elementCourant = dictionnaireElements.get(trouve);
@@ -1085,27 +1085,36 @@ function addDependance(idCourant, selectedElementId){
     }
 
     let elementCourant = dictionnaireElements.get(idCourant);
-    document.getElementById("selectElementParameter")
-
+    let elementSelected = dictionnaireElements.get(selectedElementId);
 
     let choosenParameter = document.getElementById("selectElementParameter").value;
     let choosenEvent = document.getElementById("selectEvent").value;
 
     let parameterId=0;
-    let parameters = document.getElementById("element_"+selectedElementId).childNodes;
+    let parameters;
+    console.log(elementSelected);
+    if(elementSelected.upperType == "select"){
+        parameters = document.getElementById("element_"+selectedElementId).childNodes; //CA NE MARCHE QUE POUR LES LISTES DEROULANTE
+        console.log("childNodes");
+    } else if (elementSelected.type == "radio"){
+        parameters = document.getElementById("div_"+ elementSelected.id).getElementsByTagName("INPUT");
+        console.log("PAS childNodes");
+    }
+
     if(afficherTraces == true){
         console.log(parameters);
         console.log(document.getElementById("element_"+selectedElementId));
-        console.log(document.getElementById("element_"+selectedElementId).childNodes);
     }
-    parameters.forEach(function(parameter){
-        if(parameter.innerHTML.localeCompare(choosenParameter) == 0){
-            parameterId = parameter.id;
+
+    for(let i = 0; i < parameters.length; i++){
+        if(parameters[i].innerHTML.localeCompare(choosenParameter) == 0){
+            parameterId = parameters[i].id;
         }
         if(afficherTraces == true){
-            console.log("comparaison de | "+parameter.innerHTML+" | et | "+choosenParameter+" |");
+            console.log("comparaison de | "+parameters[i].innerHTML+" | et | "+choosenParameter+" |");
         }
-    })
+    }
+
 
     if(afficherTraces == true){
         console.log("On envoie dans addDependance:");
@@ -1117,6 +1126,8 @@ function addDependance(idCourant, selectedElementId){
     console.log(elementCourant);
     edit(idCourant);
 }
+
+
 /*
 ----------------------------------------------------------------------------------------------
 ----------------- Fonctions concerning exclusively SAVING FORM --------------------------
@@ -1124,7 +1135,6 @@ function addDependance(idCourant, selectedElementId){
 */
 
 function saveForm(){
-
     let donnees = "";
     dictionnaireElements.forEach(function(element){
         //Stocker les valeur contenu dans la map
@@ -1154,7 +1164,6 @@ function saveForm(){
        
         //Suite du traitement à faire ici (La on obtient un obj parse en str)
     });
-
 
     if(afficherTraces == true){
         console.log(donnees);
