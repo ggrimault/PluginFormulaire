@@ -82,7 +82,7 @@ class objectFormulaire{
             this._nbParameter = nb;
         }
 
-        set _nbDependance(nb){
+        set nbDependance(nb){
             this._nbDependance = nb;
         }
 
@@ -119,7 +119,7 @@ class objectFormulaire{
             return this._nbParameter;
         }
 
-        get _nbDependance(){
+        get nbDependance(){
             return this._nbDependance;
         }
 
@@ -382,6 +382,7 @@ class objectFormulaire{
             let numeroTab = this.dependance.get("idLinked").indexOf(IdLinked);
             this.dependance.get("idLinked").splice(numeroTab,1);
             this.dependance.get("eventLinked").splice(numeroTab,1);
+            this.nbDependance--;
         }
     }
     //variable statique. La déclaration se fait en dessous de la classe.
@@ -571,17 +572,18 @@ function edit(idCourant){
             case "radio":
                 editRadio(elementCourant);
                 createBtnAddParameter(elementCourant);
-                editDependance(elementCourant);
                 break;
             case "select":
                 editSelect(elementCourant);
                 createBtnAddOption(elementCourant);
-                editDependance(elementCourant);
                 break;
             default:
                 //lalala
                 break;
         }
+        displayDependances(elementCourant);
+        editDependance(elementCourant);
+
         
 }
 
@@ -952,17 +954,14 @@ function editDependance(elementCourant){
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editDependance");
     }
-
     //Affichage
-        let divDependance = document.createElement("DIV");
-        divDependance.setAttribute("id","divDependance");
+        let divDependance = document.getElementById("divDependance");
         let label = document.createElement("label");
         label.innerHTML = "Dépendances";
 
         divDependance.appendChild(document.createElement("br"));
         divDependance.appendChild(document.createElement("br"));
         divDependance.appendChild(label);
-        document.getElementById("panneauConfig").appendChild(divDependance);
         divDependance.appendChild(document.createElement("br"));
         divDependance.appendChild(document.createElement("br"));
 
@@ -972,7 +971,7 @@ function editDependance(elementCourant){
         selectElement.setAttribute("id","selectElement");
         dictionnaireElements.forEach(function(element){
             
-            if(element == elementCourant || element.type == "text"  || element.type == "textArea" || element.type == "checkbox"){}//Ne rien faire
+            if(element == elementCourant || element.type == "text"  || element.type == "textArea" || element.type == "checkbox" || element.type == "inputText" ){}//Ne rien faire
             else {
                 //Creation d'une liste déroulante contenant le nom des éléments présents
                     let option = document.createElement("option");
@@ -1090,7 +1089,7 @@ function addDependance(idCourant, selectedElementId){
     let choosenParameter = document.getElementById("selectElementParameter").value;
     let choosenEvent = document.getElementById("selectEvent").value;
 
-    let parameterId=0;
+    let parameterId = "pas trouve";
     let parameters;
     console.log(elementSelected);
     if(elementSelected.upperType == "select"){
@@ -1103,13 +1102,22 @@ function addDependance(idCourant, selectedElementId){
 
     if(afficherTraces == true){
         console.log(parameters);
-        console.log(document.getElementById("element_"+selectedElementId));
+        console.log(selectedElementId);
+        //console.log(document.getElementById("element_"+selectedElementId));
     }
 
     for(let i = 0; i < parameters.length; i++){
-        if(parameters[i].innerHTML.localeCompare(choosenParameter) == 0){
-            parameterId = parameters[i].id;
+        if(dictionnaireElements.get(selectedElementId).type == "radio"){ //radio btn
+            let currentChaine = document.getElementById("label_"+parameters[i].id.split("_")[1]).innerHTML;
+            if(currentChaine.localeCompare(choosenParameter) == 0){
+                parameterId = parameters[i].id;
+            }
+        } else { //Liste déroulante
+            if(parameters[i].innerHTML.localeCompare(choosenParameter) == 0){
+                parameterId = parameters[i].id;
+            }
         }
+        
         if(afficherTraces == true){
             console.log("comparaison de | "+parameters[i].innerHTML+" | et | "+choosenParameter+" |");
         }
@@ -1127,6 +1135,64 @@ function addDependance(idCourant, selectedElementId){
     edit(idCourant);
 }
 
+function displayDependances(elementCourant){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction displayDependances");
+    }
+
+    //Affichage
+        let divDependance = document.createElement("DIV");
+        divDependance.setAttribute("id","divDependance");
+        document.getElementById("panneauConfig").appendChild(divDependance);
+        divDependance.appendChild(document.createElement("br"));
+        divDependance.appendChild(document.createElement("br"));
+
+    let labelPresentation = document.createElement("h4");
+    labelPresentation.innerHTML = "Liste des dépendances présentes: ";
+    divDependance.appendChild(labelPresentation);
+
+    console.log("Le nombre de dep est de : "+elementCourant.nbDependance);
+    for(let i = 0; i < elementCourant.nbDependance; i++){
+        let uneDependance = document.createElement("p");
+        let idObjet = elementCourant.dependance.get("idLinked")[i];
+        let eventObjet = elementCourant.dependance.get("eventLinked")[i];
+        console.log(idObjet.split("_")[1].split(".")[0]);
+        console.log(idObjet);
+        let elementLie = dictionnaireElements.get(parseInt(idObjet.split("_")[1].split(".")[0]));
+        console.log(elementLie);
+        let chaine;
+        if(elementLie.type == "radio"){//radio btn
+            chaine = "Lié au paramètre : " + document.getElementById("label_"+idObjet.split("_")[1]).innerHTML +  " contenu dans " + elementLie.label + " et l'évènement lié est " + eventObjet;
+        } else {//select
+            chaine = "Lié au paramètre : " + document.getElementById(idObjet).innerHTML + " contenu dans " + elementLie.label + " et l'évènement lié est " + eventObjet;
+        }
+        uneDependance.innerHTML = chaine;
+        
+        //On crée un bouton qui permet de supprimer la dépendance
+            let boutonSuppr;
+            boutonSupprDependance = document.createElement("button");
+            boutonSupprDependance.id = "btnSupprDependance_" + elementCourant.id;
+            boutonSupprDependance.setAttribute("onclick","deleteDependance("+elementCourant.id +","+ i +")");
+            boutonSupprDependance.innerHTML = "Supprimer la dépendance";
+
+        divDependance.appendChild(uneDependance);
+        divDependance.appendChild(boutonSupprDependance);
+    } 
+
+    
+    //eventLinked et idLinked
+}
+
+function deleteDependance(idCourant, iteration){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction displayDependances");
+        console.log("les parametre sont: "+idCourant+","+iteration);
+    }
+    let elementCourant = dictionnaireElements.get(idCourant);
+    elementCourant.deleteDependance(elementCourant.dependance.get("idLinked")[iteration]);
+    console.log(elementCourant);
+    edit(idCourant);
+}
 
 /*
 ----------------------------------------------------------------------------------------------
