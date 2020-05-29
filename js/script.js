@@ -1179,7 +1179,6 @@ function displayDependances(elementCourant){
         divDependance.appendChild(boutonSupprDependance);
     } 
 
-    
     //eventLinked et idLinked
 }
 
@@ -1201,37 +1200,41 @@ function deleteDependance(idCourant, iteration){
 */
 
 function saveForm(){
-    let donnees = "";
-    dictionnaireElements.forEach(function(element){
-        //Stocker les valeur contenu dans la map
-            let donneeLabel = element.parameter.get("label");
-            let donneeCheck = element.parameter.get("checked");
-            let saveParameter = element.parameter;
-            if(afficherTraces == true){
-                console.log(donneeLabel);
-                console.log(donneeCheck);
-                console.log(saveParameter);
-            }
+    let donnees = {};
 
-        //changer la map par deux tableau
-            element.parameter = new Array();
-            element.parameter[0] = donneeLabel;
-            element.parameter[1] = donneeCheck;
-
-
-        //faire la sauvegarde
-            donnees += JSON.stringify(element);
-
-        //remettre la map en place
-            element.parameter = saveParameter;
-            if(afficherTraces == true){
-                console.log(element);
-            }
-       
-        //Suite du traitement à faire ici (La on obtient un obj parse en str)
+    dictionnaireElements.forEach(function(value, key){
+        donnees[key] = value
     });
+
+    JSON.stringify(donnees);
 
     if(afficherTraces == true){
         console.log(donnees);
     }
+
+    let xhr = getXMLHttpRequest();
+    xhr.open("POST","/wp-content/plugins/pluginCreationFormulaire/sauvegarderDonnees.php",true);
+    xhr.send("json="+donnees);
+}
+
+function getXMLHttpRequest() {
+    var xhr = null;
+    if (window.XMLHttpRequest || window.ActiveXObject){
+        if (window.ActiveXObject){
+            try{
+                xhr = new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch(e){
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
+        else{
+            xhr = new XMLHttpRequest();
+        }
+    }
+    else{
+        alert("Votre navigateur ne supporte pas l'objet XMLHTTPRequest...");
+        return null;
+    }
+    return xhr;
 }
