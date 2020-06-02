@@ -583,6 +583,7 @@ function edit(idCourant){
         }
         displayDependances(elementCourant);
         editDependance(elementCourant);
+        editPrice(elementCourant);
 
         
 }
@@ -732,20 +733,6 @@ function editParametersLabel(elementCourant){
 
                 divParameter.appendChild(document.createElement("br"));
 
-                let labelPrix = document.createTextNode("Prix si ce paramètre est coché :");
-                divParameter.appendChild(labelPrix);
-
-                let champPrix = document.createElement("input");
-                champPrix.setAttribute("id","champPrix_"+lesInputs[i].id.split("_")[1]);
-                divParameter.appendChild(champPrix);
-                champPrix.value = elementCourant.parameter.get("price")[i];
-
-                let btnPrix = document.createElement("button");
-                btnPrix.setAttribute("id","btnPrix");
-                btnPrix.innerHTML = "Valider le prix";
-                btnPrix.setAttribute("onclick","changerPrix("+idDebut+","+idSuite+","+i+")");
-                divParameter.appendChild(btnPrix);
-
                 divParameter.appendChild(document.createElement("br"));
             }
 }
@@ -775,21 +762,6 @@ function deleteParameter(idDebut,idSuite){
     edit(idDebut);
 }
 
-function changerPrix(idDebut,idSuite,index){
-    let elementCourant = dictionnaireElements.get(idDebut);
-    let anId = idDebut+"."+idSuite;
-
-    let prix = document.getElementById("champPrix_"+anId).value;
-    if (isNaN(prix)){
-      alert("Veuillez insérer un prix valide");
-      document.getElementById("champPrix_"+anId).innerHTML = "";
-    }else{
-      elementCourant.parameter.get("price")[index] = prix;
-    }
-    removeElements();
-    showElements();
-    edit(idDebut);
-}
 
 function displayEditionParameter(idDebut, idFin, i){
     if(afficherTraces == true){
@@ -1192,6 +1164,72 @@ function deleteDependance(idCourant, iteration){
     console.log(elementCourant);
     edit(idCourant);
 }
+
+/*
+----------------------------------------------------------------------------------------------
+----------------- Fonctions concerning PRICES -------------------------------------------
+----------------------------------------------------------------------------------------------
+*/
+
+function editPrice(elementCourant){
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction editPrice");
+    }
+
+    if(elementCourant.isPrice == true){
+    //Affichage
+        let divPrice = document.createElement("DIV");
+        divPrice.setAttribute("id","divPrice");
+        document.getElementById("panneauConfig").appendChild(divPrice);
+        let label = document.createElement("label");
+        label.innerHTML = "Prix";
+
+        divPrice.appendChild(document.createElement("br"));
+        divPrice.appendChild(document.createElement("br"));
+        divPrice.appendChild(label);
+        divPrice.appendChild(document.createElement("br"));
+        divPrice.appendChild(document.createElement("br"));
+
+    //Creation de l'espace d'edition des prix
+        //Creation des options
+        for(let i = 0; i < elementCourant.nbParameter; i++){
+            let chaine = elementCourant.parameter.get("label")[i] + " :  ";
+            let labelParam = document.createElement("P");
+            labelParam.innerHTML = chaine;
+            labelParam.setAttribute("id","parametre_"+i);
+            let champPrix = document.createElement("INPUT");
+            champPrix.setAttribute("id","prix_" + i );
+
+            divPrice.appendChild(labelParam);
+            divPrice.appendChild(champPrix);
+            champPrix.value = elementCourant.parameter.get("price")[i];
+
+            let btnPrix = document.createElement("button");
+            btnPrix.setAttribute("id","btnPrix");
+            btnPrix.innerHTML = "Modifier";
+            btnPrix.setAttribute("onclick","changerPrix("+elementCourant.id+","+i+")");
+            champPrix.appendChild(btnPrix);
+            champPrix.appendChild(document.createElement("br"));
+        }
+    }
+}
+
+function changerPrix(idElement,index){
+    let elementCourant = dictionnaireElements.get(idElement);
+
+    let prix = document.getElementById("prix_"+index).value;
+    if (isNaN(prix)){
+      alert("Veuillez insérer un prix valide");
+      document.getElementById("prix_"+index).innerHTML = "";
+    }else{
+      elementCourant.parameter.get("price")[index] = prix;
+    }
+    // removeElements();
+    //  showElements();
+    edit(idDebut);
+}
+
+
 
 /*
 ----------------------------------------------------------------------------------------------
