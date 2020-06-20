@@ -1,4 +1,4 @@
-class objectFormulaire{
+class objetFormulaire{
 
     //variables
         _idGlobal;
@@ -14,12 +14,12 @@ class objectFormulaire{
         _nbDependance;
 
     //Constructeur
-        constructor(type){
+        constructor(type){ //Construit un objet ObjetFormulaire en initialisant ses propriétés
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction constructor");
             }
 
-            this.id = objectFormulaire.nbId;
+            this.id = objetFormulaire.nbId;
             this.upperType = type;
             this.type = type;
             this.name = this.type + "_" + this.id;
@@ -42,7 +42,7 @@ class objectFormulaire{
             this.nbDependance = 0;
         }
 
-    //SET
+    //SETTEURS
 
         set id(id){
             this._idGlobal = id;
@@ -86,7 +86,7 @@ class objectFormulaire{
             this._nbDependance = nb;
         }
 
-    //GET
+    //GETTEURS
         get id(){
             return this._idGlobal;
         }
@@ -125,7 +125,7 @@ class objectFormulaire{
 
     //AUTRE
 
-        switchActivated(){
+        switchActivated(){ //Permet d'inverser la valeur du paramètre booléen activated
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction switchActivated");
             }
@@ -137,7 +137,7 @@ class objectFormulaire{
             }
         }
 
-        switchRequired(){
+        switchRequired(){ //Permet d'inverser la valeur du paramètre booléen Required
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction switchRequired");
             }
@@ -149,7 +149,7 @@ class objectFormulaire{
             }
         }
 
-        refreshLabel(){
+        refreshLabel(){ //Affiche le label avec la valeur contenu dans son paramètre label
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction refreshLabel");
             }
@@ -157,7 +157,7 @@ class objectFormulaire{
             document.getElementById("label_" + this.id).innerHTML = this.label;
         }
 
-        editLabel(chaine){
+        editLabel(chaine){ //Permet d'attribuer une nouvelle valeur au paramètre label et l'affiche
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction editLabel");
             }
@@ -166,7 +166,7 @@ class objectFormulaire{
             this.refreshLabel();
         }
 
-        createElementInside(father){
+        createElementInside(father){ //Affiche un ObjetFormulaire à l'intérieur d'un élément HTML
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction createElementInside(father)");
             }
@@ -219,69 +219,73 @@ class objectFormulaire{
                 this.refreshLabel();
 
             //Incrémentation de l'ID
-                objectFormulaire.nbId++;
+                objetFormulaire.nbId++;
         }
 
-        deleteDisplayedParameters(){
+        deleteDisplayedParameters(){ //Efface graphiquement l'objet
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction deleteDisplayedParameters");
             }
+            //Sélection des éléments de l'objet
+                let currentDiv = document.getElementById("div_"+this.id);
+                let listParameter = document.getElementsByName(this.type+"_"+this.id);
+                let listLabel = document.getElementsByName("label_"+this.id);
+                let listBr = document.getElementsByName("br_"+this.id);
+                let it = listParameter.length;
 
-            let currentDiv = document.getElementById("div_"+this.id);
-            let listParameter = document.getElementsByName(this.type+"_"+this.id);
-            let listLabel = document.getElementsByName("label_"+this.id);
-            let listBr = document.getElementsByName("br_"+this.id);
-            let it = listParameter.length;
-            for(let i =listParameter.length -1; i>=0; i--)
-            {
-                it++;
-                currentDiv.removeChild(listParameter[i]);
-            }
-            for(let i = listBr.length-1; i>=0; i--){
-                currentDiv.removeChild(listBr[i]);
-            }
-            for(let i = listLabel.length-1; i>=0; i--){
-                currentDiv.removeChild(listLabel[i]);
-            }
+            //Suppression
+                for(let i =listParameter.length -1; i>=0; i--)
+                {
+                    it++;
+                    currentDiv.removeChild(listParameter[i]);
+                }
+                for(let i = listBr.length-1; i>=0; i--){
+                    currentDiv.removeChild(listBr[i]);
+                }
+                for(let i = listLabel.length-1; i>=0; i--){
+                    currentDiv.removeChild(listLabel[i]);
+                }
 
         }
 
 
-        displayParameters(){
+        displayParameters(){ //Affiche les paramètres d'un Objet, tel que les différentes case à cocher, bouton radio...
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction displayParameters");
             }
+            //Suppression des paramètres affichés
+                this.deleteDisplayedParameters();
 
-            this.deleteDisplayedParameters();
-            for(let i = 0; i < this.nbParameter; i++){
-                let element = document.createElement(this.upperType);
-                let label = document.createElement("label");
+            //Affichage des paramtètres
+                for(let i = 0; i < this.nbParameter; i++){
+                    let element = document.createElement(this.upperType);
+                    let label = document.createElement("label");
 
-                element.setAttribute("type",this.type);
-                element.setAttribute("id", "element_" + this.id + "." + i);
-                element.setAttribute("name", this.type + "_" + this.id);
-                if(this.parameter.get("checked")[i]==true){
-                  element.checked = true;
+                    element.setAttribute("type",this.type);
+                    element.setAttribute("id", "element_" + this.id + "." + i);
+                    element.setAttribute("name", this.type + "_" + this.id);
+                    if(this.parameter.get("checked")[i]==true){
+                    element.checked = true;
+                    }
+
+                    label.setAttribute("for",element.getAttribute("name"));
+                    label.setAttribute("name", "label_" + this.id);
+                    label.setAttribute("id", "label_" + this.id + "." + i);
+
+                    let valueLabel = this.parameter.get("label")[i];
+                    label.innerHTML = valueLabel;
+
+                    document.getElementById("div_"+this.id).appendChild(element);
+                    document.getElementById("div_"+this.id).appendChild(label);
+
+                    let br = document.createElement("br");
+                    br.setAttribute("name","br_"+this.id);
+
+                    document.getElementById("div_"+this.id).appendChild(br);
                 }
-
-                label.setAttribute("for",element.getAttribute("name"));
-                label.setAttribute("name", "label_" + this.id);
-                label.setAttribute("id", "label_" + this.id + "." + i);
-
-                let valueLabel = this.parameter.get("label")[i];
-                label.innerHTML = valueLabel;
-
-                document.getElementById("div_"+this.id).appendChild(element);
-                document.getElementById("div_"+this.id).appendChild(label);
-
-                let br = document.createElement("br");
-                br.setAttribute("name","br_"+this.id);
-
-                document.getElementById("div_"+this.id).appendChild(br);
-            }
         }
 
-        displayOptions(){//Afficher toutes les options d'un select a partir des variables parameter et nbParameter
+        displayOptions(){//Affiche toutes les options d'une Combobox (select) à partir des variables parameter et nbParameter
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction displayOptions");
             }
@@ -312,7 +316,7 @@ class objectFormulaire{
             }
         }
 
-        deleteDisplayedOptions(){//Supprimer toutes les options (graphiquement) affichés de l'élement
+        deleteDisplayedOptions(){//Supprime graphiquement toutes les options affichés de l'objet combobox (Select)
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction deleteDisplayedOptions");
                 console.log("Le nombre de suppression doit être de "+this.nbParameter);
@@ -327,8 +331,9 @@ class objectFormulaire{
                 select.remove(0);
             }
         }
-        //CONCERNANT L'ATTRIBUT PARAMETRE
-        addParameter(label, boolean){
+
+    //CONCERNANT L'ATTRIBUT PARAMETRE
+        addParameter(label, boolean){ //Ajoute un paramètre à l'objet, contenant un nom et une valeur booléenne coché ou non (sans affichage)
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction addParameter CLASS");
             }
@@ -341,7 +346,7 @@ class objectFormulaire{
             this.nbParameter++;
         }
 
-        deleteParameter(finId){
+        deleteParameter(finId){ //Supprime le paramètre indiqué par un nombre (sansa affichage)
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction deleteParameter");
             }
@@ -350,22 +355,8 @@ class objectFormulaire{
             this.parameter.get("checked").splice(finId, finId+1);
         }
 
-        editParameterLabel(finId, label){
-            if(afficherTraces == true){
-                console.log("Vous êtes dans la fonction editParameterLabel");
-            }
-            this.parameter.get("label")[finId] = label;
-        }
-
-        editParameterChecked(finId, boolean){
-            if(afficherTraces == true){
-                console.log("Vous êtes dans la fonction editParameterChecked");
-            }
-            this.parameter.get("checked")[finId] = boolean;
-        }
-
-        //CONCERNANT DEPENDANCE
-        addDependance(IdLinked, eventLinked){
+    //CONCERNANT DEPENDANCE
+        addDependance(IdLinked, eventLinked){ //Ajout d'une dépendance à l'objet (sans affichage)
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction addDependance");
                 console.log(this);
@@ -375,7 +366,7 @@ class objectFormulaire{
             this.nbDependance++;
         }
 
-        deleteDependance(IdLinked){
+        deleteDependance(IdLinked){ //Suppression d'une dépendance à l'objet (sans affichage)
             if(afficherTraces == true){
                 console.log("Vous êtes dans la fonction deleteDependance");
             }
@@ -386,7 +377,7 @@ class objectFormulaire{
         }
     }
     //variable statique. La déclaration se fait en dessous de la classe.
-    objectFormulaire.nbId = 0;
+    objetFormulaire.nbId = 0;
 
 /*
 -----------------------------------------------------------------------------------------------------
@@ -400,7 +391,7 @@ let ordreElement = new Array;
 var nbElements = 0;
 var isDropped = 1; //Permet de savoir si l'element est "en l'air", c'est utilisé pour ne pas créer 2 element quand on le drop sur un element existant
 
-function allowDrop(event) {
+function allowDrop(event) { //Pour ne pas effectuer le premier clic sur élément sans faire drag & drop
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction allowDrop");
     }
@@ -408,7 +399,16 @@ function allowDrop(event) {
     event.preventDefault();
 }
 
-function drop(event, id)
+function dragEventHandler(event)
+{
+    if(afficherTraces == true){
+        console.log("Vous êtes dans la fonction dragEventHandler");
+    }
+    event.dataTransfer.setData("text",event.target.id);
+    isDropped = 0;
+}
+
+function drop(event, id) //Permet de drop un élément sur la partie formulaire de la page
 {
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction drop");
@@ -418,7 +418,7 @@ function drop(event, id)
 
     var typeIdTarget = event.dataTransfer.getData("text");
 
-    var newElement = new objectFormulaire(typeIdTarget);
+    var newElement = new objetFormulaire(typeIdTarget);
 
     if (isDropped == 0) { //Si on drag dans un div qui est lui meme sur le dropper, ca l'ajoutera 2 fois, isDropped sert à ca
         if(id == "dropper") //si c'est juste sur le dropper, on le met à la fin de la ligne
@@ -434,16 +434,7 @@ function drop(event, id)
     showElements();
 }
 
-function dragEventHandler(event)
-{
-    if(afficherTraces == true){
-        console.log("Vous êtes dans la fonction dragEventHandler");
-    }
-    event.dataTransfer.setData("text",event.target.id);
-    isDropped = 0;
-}
-
-function showElements()
+function showElements() //Permet d'afficher tous les éléments dans la colonne centrale 
 {
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction showElements");
@@ -466,21 +457,21 @@ function showElements()
 
 }
 
-function removeElements(){
+function removeElements(){ //Permet de supprimer tous les éléments de la colonne centrale graphiquement
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction removeElements");
     }
     document.getElementById("dropper").innerHTML = ""; //plus rien
 }
 
-function removeEdit(){
+function removeEdit(){ //Permet de vider la colonne droite
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction removeEdit");
     }
     document.getElementById("panneauConfig").innerHTML = "";
 }
 
-function edit(idCourant){
+function edit(idCourant){ //Permet l'affichage du panneau d'édition des éléments
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction edit");
         console.log("Voici l'id courant: "+idCourant);
@@ -488,6 +479,7 @@ function edit(idCourant){
     //On efface tout dans la colonne d'edition
         removeEdit();
         let elementCourant = dictionnaireElements.get(idCourant);
+
     //On affiche dans un input text le LABEL
         //Creation de l'input
             let champ;
@@ -588,7 +580,7 @@ function edit(idCourant){
         
 }
 
-function putElementUp(anId){
+function putElementUp(anId){ //Permet de monter un élément de la colonne centrale d'un rang
   let index = ordreElement.indexOf(anId);
   if(index > 0){
     let temp = ordreElement[index - 1];
@@ -598,7 +590,7 @@ function putElementUp(anId){
     showElements();
   }
 }
-function putElementDown(anId){
+function putElementDown(anId){ //Permet de descendre un élément de la colonne centrale d'un rang
   let index = ordreElement.indexOf(anId);
   if(index < ordreElement.length-1){
     let temp = ordreElement[index + 1];
@@ -609,7 +601,7 @@ function putElementDown(anId){
   }
 }
 
-function supprimerElement(anId){
+function supprimerElement(anId){ //Permet de supprimer un élément (classe et graphiquement)
   dictionnaireElements.delete(anId);
   console.log(ordreElement);
   ordreElement.splice(ordreElement.indexOf(anId),1);
@@ -619,7 +611,7 @@ function supprimerElement(anId){
   removeEdit();
 }
 
-function getInputValueAndEditLabel(anId){
+function getInputValueAndEditLabel(anId){ //Permet d'éditer le label en fonction de la value contenu dans l'input correspondant (non graphique)
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction getInputValueAndEditLabel");
     }
@@ -627,7 +619,7 @@ function getInputValueAndEditLabel(anId){
     elementCourant.editLabel(document.getElementById("champ_"+anId).value);
 }
 
-function swapRequis(anId){
+function swapRequis(anId){ //Permet d'appeler la méthode de classe switchRequired
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction swapRequis");
     }
@@ -635,7 +627,7 @@ function swapRequis(anId){
     elementCourant.switchRequired();
 }
 
-function swapActif(anId){
+function swapActif(anId){ //Permet d'appeler la méthode de classe swapActif
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction swapActif");
     }
@@ -643,7 +635,7 @@ function swapActif(anId){
     elementCourant.switchActivated();
 }
 
-function createCheckBoxRequired(anId){
+function createCheckBoxRequired(anId){ //Créer une checkbox qui gère l'attribut de classe _required
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction createCheckBoxRequired");
     }
@@ -665,7 +657,7 @@ function createCheckBoxRequired(anId){
     panneauConfig.appendChild(champRequis);
 }
 
-function createCheckBoxActivated(anId){
+function createCheckBoxActivated(anId){ //Créer une checkbox qui gère l'attribut de classe _activated
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction checkBoxActivated");
     }
@@ -687,7 +679,7 @@ function createCheckBoxActivated(anId){
     panneauConfig.appendChild(champActif);
 }
 
-function editParametersLabel(elementCourant){
+function editParametersLabel(elementCourant){ //permet de créer dans la colonne d'édition tous les éléments relatifs à l'édition des paramètres d'un élément
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editParametersLabel");
     }
@@ -737,7 +729,7 @@ function editParametersLabel(elementCourant){
             }
 }
 
-function addParameter(idCourant){
+function addParameter(idCourant){ //Permet d'ajouter un paramètre à l'élément dont l'ID est passé en paramètre
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction addParameter");
     }
@@ -752,7 +744,7 @@ function addParameter(idCourant){
     edit(idCourant);
 }
 
-function deleteParameter(idDebut,idSuite){
+function deleteParameter(idDebut,idSuite){ //permet de supprimer le paramètre désigné
     let elementCourant = dictionnaireElements.get(idDebut);
     elementCourant.parameter.get("label").splice(idSuite,1);
     elementCourant.parameter.get("checked").splice(idSuite,1);
@@ -763,7 +755,7 @@ function deleteParameter(idDebut,idSuite){
 }
 
 
-function displayEditionParameter(idDebut, idFin, i){
+function displayEditionParameter(idDebut, idFin, i){ //Permet de modifier le nom d'un paramètre
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction displayEditionParameter");
     }
@@ -783,26 +775,13 @@ function displayEditionParameter(idDebut, idFin, i){
     elementCourant.parameter.get("label")[i] = newValue;
 }
 
-function test(){
-    if(afficherTraces == true){
-        console.log("Vous êtes dans la fonction test");
-    }
-
-    dictionnaireElements.get(0).addDependance("OUISAMARCHE","anEvent");
-    dictionnaireElements.get(0).addDependance("encore1","anEvent");
-    dictionnaireElements.get(0).addDependance("sapar","anEvent");
-    dictionnaireElements.get(0).deleteDependance("encore1");
-    if(afficherTraces == true){
-        console.log(dictionnaireElements.get(0));
-    }
-}
 
 /*
 ----------------------------------------------------------------------------------------------
 ----------------- Fonctions concerning exclusively CHECKBOX & RADIO --------------------------
 ----------------------------------------------------------------------------------------------
 */
-function createBtnAddParameter(elementCourant){
+function createBtnAddParameter(elementCourant){ //permet de créer le bouton d'ajout de paramètre
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction createBtnAddParameter");
     }
@@ -813,7 +792,7 @@ function createBtnAddParameter(elementCourant){
     document.getElementById("panneauConfig").appendChild(btn);
 }
 
-function displayCheckParameter(idDebut, idFin){
+function displayCheckParameter(idDebut, idFin){ //permet de modifier la valeur check d'un paramètre d'un élément checkbox
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction displayCheckParameters");
     }
@@ -832,14 +811,14 @@ function displayCheckParameter(idDebut, idFin){
     }
 }
 
-function editCheckBox(elementCourant){
+function editCheckBox(elementCourant){ //Fonction a appeler spécifiques à l'édition d'une checkbox
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editCheckBox");
     }
     editParametersLabel(elementCourant);
 }
 
-function editRadio(elementCourant){
+function editRadio(elementCourant){ //Fonction a appeler spécifiques à l'édition d'un élément bouton radio
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editRadio");
     }
@@ -851,7 +830,7 @@ function editRadio(elementCourant){
 ----------------- Fonctions concerning exclusively SELECT & OPTIONS --------------------------
 ----------------------------------------------------------------------------------------------
 */
-function createBtnAddOption(elementCourant){
+function createBtnAddOption(elementCourant){ //permet de créer un bouton d'ajout de de paramètre dans une combobox
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction createBtnAddOption");
     }
@@ -862,7 +841,7 @@ function createBtnAddOption(elementCourant){
     document.getElementById("panneauConfig").appendChild(btn);
 }
 
-function addOption(idCourant){
+function addOption(idCourant){ //Permet d'ajouter une option a une checkbox
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction addOption");
     }
@@ -872,7 +851,7 @@ function addOption(idCourant){
     edit(idCourant);
 }
 
-function editSelect(elementCourant){
+function editSelect(elementCourant){ //permet de créer dans la colonne d'édition tous les éléments relatifs à l'édition des paramètres d'un élément select
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editSelect");
     }
@@ -922,7 +901,7 @@ function editSelect(elementCourant){
 ----------------- Fonctions concerning DEPENDANCES -------------------------------------------
 ----------------------------------------------------------------------------------------------
 */
-function editDependance(elementCourant){
+function editDependance(elementCourant){ ////permet de créer dans la colonne d'édition tous les éléments relatifs à l'édition des dépendances/conditions
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editDependance");
     }
@@ -964,7 +943,7 @@ function editDependance(elementCourant){
         divDependance.appendChild(bouton);
 }
 
-function getParameterOfElement(IdCourant){
+function getParameterOfElement(IdCourant){ //permet d'obtenir tous les paramètre d'un élément et de les insérer (label) dans la combobox courante
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction getParameterOfElement");
     }
@@ -1026,7 +1005,7 @@ function getParameterOfElement(IdCourant){
     document.getElementById("divDependance").appendChild(bouton);
 }
 
-function selectionnerEvent(idCourant, selectedElementId){
+function selectionnerEvent(idCourant, selectedElementId){ //Permet de choisir un évènement dans une combobox
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction selctionnerEvent");
     }
@@ -1050,7 +1029,7 @@ function selectionnerEvent(idCourant, selectedElementId){
     document.getElementById("divDependance").appendChild(bouton);
 }
 
-function addDependance(idCourant, selectedElementId){
+function addDependance(idCourant, selectedElementId){ //permet  d'ajouter une dépendance
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction addDependance");
     }
@@ -1107,7 +1086,7 @@ function addDependance(idCourant, selectedElementId){
     edit(idCourant);
 }
 
-function displayDependances(elementCourant){
+function displayDependances(elementCourant){ //permet d'afficher les dépendances présente pour l'élément courant
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction displayDependances");
     }
@@ -1154,7 +1133,7 @@ function displayDependances(elementCourant){
     //eventLinked et idLinked
 }
 
-function deleteDependance(idCourant, iteration){
+function deleteDependance(idCourant, iteration){ //Permet de supprimé la dépendance sélectionnée
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction displayDependances");
         console.log("les parametre sont: "+idCourant+","+iteration);
@@ -1171,10 +1150,14 @@ function deleteDependance(idCourant, iteration){
 ----------------------------------------------------------------------------------------------
 */
 
-function editPrice(elementCourant){
+function editPrice(elementCourant){ //permet l'édition du prix (affichage) NON IMPLEMENTE MAIS FONCTIONNELLE PARTIELEMENT
+//ATTENTION
+//Pour cette fonction ci, il manque seulement à implément un checkbox PRICE, qui en fonction de son état affiche cette édition de prix ou non
     if(afficherTraces == true){
         console.log("Vous êtes dans la fonction editPrice");
     }
+    //ATTENTION CETTE LIGNE DE CODE N'EST LA QUE TEMPORAIREMENT, DOIT ETRE GERER PAR L'OBJET A TERME
+                                     elementCourant.isPrice = true;
 
     if(elementCourant.isPrice == true){
     //Affichage
@@ -1214,7 +1197,7 @@ function editPrice(elementCourant){
     }
 }
 
-function changerPrix(idElement,index){
+function changerPrix(idElement,index){ //permet de modifier le prix 
     let elementCourant = dictionnaireElements.get(idElement);
 
     let prix = document.getElementById("prix_"+index).value;
@@ -1224,8 +1207,6 @@ function changerPrix(idElement,index){
     }else{
       elementCourant.parameter.get("price")[index] = prix;
     }
-    // removeElements();
-    //  showElements();
     edit(idDebut);
 }
 
@@ -1237,7 +1218,7 @@ function changerPrix(idElement,index){
 ----------------------------------------------------------------------------------------------
 */
 
-function saveForm(){
+function saveForm(){//procédure de sauvegarde
     let donnees = {};
 
     dictionnaireElements.forEach(function(value, key){
@@ -1255,7 +1236,8 @@ function saveForm(){
     xhr.send("json="+donnees);
 }
 
-function getXMLHttpRequest() {
+//ATTENTION CETTE FONCTION POSE PROBLEME ET NE RENVOIE PAS CE QUI EST DESIRE
+function getXMLHttpRequest() { //Cette méthode permet de créer un objet XMLHttpRequest ( si c'est possible sur le navigateur sinon elle renvoit null)
     var xhr = null;
     if (window.XMLHttpRequest || window.ActiveXObject){
         if (window.ActiveXObject){
